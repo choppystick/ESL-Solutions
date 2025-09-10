@@ -1,0 +1,10 @@
+# Overview of Supervised Learning {}
+
+## Variable Types and Terminologies
+Symbols and variable conventions follow the rules outlined below by the textbook: $\newline$ Input variable is denoted by the symbol $X$. If $X$ is a vector, then its components is accessed by subscripts $X_j$. Quantitative outputs are denoted by $Y$, and qualitative outputs by $G$. Observed values are written in lowercase; for example the $i$th observed value of $X$ is written as $x_i$ (where $x_i$ is a scalar or vector). Matrices are represented by bold uppercase letters; for example, a set of $N$ input $p$-vectors $x_i$, $i = 1, ... , N$ is represented by the $N \times p$ matrix $\textbf{X}$. In general, vectors will not be bold, except when they have $N$ components; this convention distinguishes a $p$-vector of inputs $x_i$ for the $i$th observations from the $N$-vector $\textbf{x}_j$ consisting of all the observations on variable $X_j$ Since all vectors are assumed to be column vectors, the $i$th row of $\textbf{X}$ is $x_i^{T}$, the vector transpose of $x_i$.$\newline$
+For most learning tasks, we can understand it as such: given an input vector $X$, we want to make a good prediction of the output $Y$, denoted as $\hat{Y}$. If $Y\in\mathbb{R}$ then $\hat{Y}$ too; likewise for categorical outputs, $\hat{G}$ should take values in the same set $\mathcal{G}$ associated with $G$.\newline
+For accurate prediction, data is necessary. We denote training data as a set of measurements $(x_i,y_i)$ or $(x_i,g_i)$, $i = 1,...,N$.
+
+\newpage
+
+## Prediction Approaches: Least Squares and Nearest Neighbors 
