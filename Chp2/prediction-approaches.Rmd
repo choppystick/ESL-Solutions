@@ -1,0 +1,3 @@
+## Prediction Approaches: Least Squares and Nearest Neighbors 
+
+Two prediction methods are explored here: The linear model fit by linear squares and the $k$-nearest neighbor prediction rule.
