@@ -1,10 +1,169 @@
-# Overview of Supervised Learning {}
+---
+output: 
+  html_document: 
+    toc: true
+---
+
+# Overview of Supervised Learning
 
 ## Variable Types and Terminologies
-Symbols and variable conventions follow the rules outlined below by the textbook: $\newline$ Input variable is denoted by the symbol $X$. If $X$ is a vector, then its components is accessed by subscripts $X_j$. Quantitative outputs are denoted by $Y$, and qualitative outputs by $G$. Observed values are written in lowercase; for example the $i$th observed value of $X$ is written as $x_i$ (where $x_i$ is a scalar or vector). Matrices are represented by bold uppercase letters; for example, a set of $N$ input $p$-vectors $x_i$, $i = 1, ... , N$ is represented by the $N \times p$ matrix $\textbf{X}$. In general, vectors will not be bold, except when they have $N$ components; this convention distinguishes a $p$-vector of inputs $x_i$ for the $i$th observations from the $N$-vector $\textbf{x}_j$ consisting of all the observations on variable $X_j$ Since all vectors are assumed to be column vectors, the $i$th row of $\textbf{X}$ is $x_i^{T}$, the vector transpose of $x_i$.$\newline$
-For most learning tasks, we can understand it as such: given an input vector $X$, we want to make a good prediction of the output $Y$, denoted as $\hat{Y}$. If $Y\in\mathbb{R}$ then $\hat{Y}$ too; likewise for categorical outputs, $\hat{G}$ should take values in the same set $\mathcal{G}$ associated with $G$.\newline
+
+Symbols and variable conventions follow the rules outlined below by the textbook: $\newline$ Input variable is denoted by the symbol $X$. If $X$ is a vector, then its components is accessed by subscripts $X_j$. Quantitative outputs are denoted by $Y$, and qualitative outputs by $G$. Observed values are written in lowercase; for example the $i$th observed value of $X$ is written as $x_i$ (where $x_i$ is a scalar or vector). Matrices are represented by bold uppercase letters; for example, a set of $N$ input $p$-vectors $x_i$, $i = 1, ... , N$ is represented by the $N \times p$ matrix $\textbf{X}$. In general, vectors will not be bold, except when they have $N$ components; this convention distinguishes a $p$-vector of inputs $x_i$ for the $i$th observations from the $N$-vector $\textbf{x}_j$ consisting of all the observations on variable $X_j$. Since all vectors are assumed to be column vectors, the $i$th row of $\textbf{X}$ is $x_i^{T}$, the vector transpose of $x_i$.
+
+For most learning tasks, we can understand it as such: given an input vector $X$, we want to make a good prediction of the output $Y$, denoted as $\hat{Y}$. If $Y\in\mathbb{R}$ then $\hat{Y}$ too; likewise for categorical outputs, $\hat{G}$ should take values in the same set $\mathcal{G}$ associated with $G$.
+
 For accurate prediction, data is necessary. We denote training data as a set of measurements $(x_i,y_i)$ or $(x_i,g_i)$, $i = 1,...,N$.
 
-\newpage
+## Prediction Approaches: Least Squares and Nearest Neighbors
 
-## Prediction Approaches: Least Squares and Nearest Neighbors 
+Two prediction methods are explored here: The linear model fit by least squares and the $k$-nearest neighbor prediction rule.
+
+### Linear Models and Least Squares
+
+Given a vector of inputs $X^{T} = (X_1, X_2, ..., X_n)$, we predict the output $Y$ via the model: 
+
+$$
+\begin{equation}
+\hat{Y} = \hat{\beta_0} + \sum_{j=1}^{n} X_j\hat{\beta}_j
+(\#eq:leq)
+\end{equation}
+$$
+
+where $\hat{\beta_0}$ is the intercept. Equivalently, we can write the linear model in vector form as an inner product: 
+
+$$
+\begin{equation}
+\hat{Y} = X^{T}\hat{\beta}
+(\#eq:leqvec)
+\end{equation}
+$$
+
+where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_n\end{pmatrix}\in\mathbb{R^{n+1}}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_n\end{pmatrix}\in\mathbb{R}^{n+1}$, such that $\hat{Y} = \sum_{i=0}^{n}\hat{\beta}_i x_i$. 
+
+If $\textbf{X}$ is instead a feature matrix with $p$ features and $m$ samples such that $\textbf{X}\in\mathbb{R^{m\times p}}$, where $p=n+1$, we can represent $\textbf{X}^{T}$ as a $p$-dimensional row vector $\begin{bmatrix} X_0 \; X_1 \; X_2 \; ... \; X_n \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R^m}$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(m)}]$ and $X_0$ is a constant vector of $1$. In this case, suppose that $\hat{Y}$ is a $k$-dimensional row vector instead of a scalar, then by equation \@ref(eq:leq), $\beta$ must necessarily be a $p \times K$ matrix of coefficients.
+
+:::{.remark}
+In the $(p+1)$-dimensional input-output space, the tuple $(X, \hat{Y})$ represents a hyperplane. This follows directly from the linear structure of equation \@ref(eq:leqvec):
+
+$$
+\begin{equation}
+\begin{split}
+\hat{Y} &= X^{T}\beta \\
+        &= \sum_{i=0}^{n} \beta_i x_i \\
+        &= \beta_0 + \sum_{i=1}^n \beta_i x_i
+\end{split}
+\end{equation}
+$$
+Swapping the LHS with the RHS term:
+
+$$
+\begin{equation}
+\begin{split}
+-\beta_0 &= \sum_{i=1}^{n} \beta_i x_i - \hat{Y}\\
+         &= \sum_{i=1}^n \beta_i x_i + (-1)\hat{Y}\\
+         &= (\beta_1 \; \beta_2 \; ... \beta_n)\;\cdot\;(x_1 \; x_2 \; ... \; \hat{Y})^T \\
+\end{split}
+\end{equation}
+$$
+A hyperplane is defined as $\textbf{w}^{T}\textbf{z}= b$. In our case, by letting $\textbf{w} = (\beta_1 \; \beta_2 \; ... \beta_n)^T$ and $\textbf{z}=(x_1 \; x_2 \;...\;\hat{Y})^T$, we obtain $\textbf{w}^{T}\textbf{z} = -\beta_0$ (our intercept $\beta_0$ translates the hyperplane away from the origin).
+:::
+
+### Residual Sum of Squares
+
+To fit our training data to the linear model, we use the method of least squares. We pick the coefficients $\beta$ that minimize the residual sum of square:
+
+$$
+\begin{equation}
+RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2
+(\#eq:RSS)
+\end{equation}
+$$
+$RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique. 
+
+:::{.remark}
+We first prove that a minimum always exists for the RSS:
+
+We expand the quadratic form of the RSS:
+
+$$
+\begin{equation}
+RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2 = \sum_{i=1}^{N} (y_i^2 + (x_{i}^{T}\beta)^2 - 2y_ix_i^{T}\beta)
+\end{equation}
+$$
+By linearity of summation and the dot product identities $\sum_{i=1}^N x_ix_i^T= X^TX$ and $X^Ty = \sum_{i=1}^N x_iy_i$, we have:
+
+$$
+\begin{equation}
+\begin{split}
+RSS(\beta) &= \sum_{i=1}^{N} y_i^2 + \sum_{i=1}^{N}\beta^Tx_ix_i^T\beta - \sum_{i=1}^{N}2y_ix_i^{T}\beta)\\
+           &= ||y_i||^2 +\beta^TX^TX\beta - 2X^Ty\beta
+\end{split}
+\end{equation}
+$$
+
+Next, we need to establish that a critical point exists and this critical point must necessarily be a minima. To determine a critical point, we use the gradient of RSS:
+
+$$
+\begin{equation}
+\begin{split}
+\nabla_{\beta}RSS(\beta) &= -2X^T(y-X\beta) \\
+                         &= -2X^Ty + 2X^TX\beta
+\end{split}
+\end{equation}
+$$
+
+Thus a critical point must satisfy the normal equation:
+
+$$
+\begin{equation}
+X^Ty = X^TX\beta
+\end{equation}
+$$
+The problem of determining the existence of a minimiser can thus be reduced to a simple problem of determining that the normal equation is consistent:
+
+A linear system $Ax = b$ has a solution if and only if $b \in \text{col}(A)$. For the normal equations $X^TX\beta = X^Ty$, we need $X^Ty \in \text{col}(X^TX)$. Since $\text{col}(X^TX) = \text{col}(X^T)$[^1] and $X^Ty$ is, by definition, a linear combination of the columns of $X^T$, we have $X^Ty \in \text{col}(X^T) = \text{col}(X^TX)$. Therefore, the normal equation is normal and a minimiser exists.
+
+Next, we show that the RSS is convex. A twice-differentiable function $f: \mathbb{R}^n \to \mathbb{R}$ is convex if its Hessian matrix is positive semi-definite everywhere.
+
+The Hessian matrix of the RSS is:
+
+$$
+\begin{equation}
+\nabla_{\beta}^2\,RSS(\beta) = 2X^TX
+\end{equation}
+$$
+
+A matrix M is positive semi-definite if $x^TMx \geq 0$ for all $x$ in $\mathbb{R}^n$. Let $v\in\mathbb{R}^n$, we show that this is true for the Hessian matrix:
+
+$$
+\begin{equation}
+v^TX^TXv = (vX)^TXv = ||vX||^2\geq0
+\end{equation}
+$$
+Thus, the RSS is convex and has a critical point. 
+
+Finally, we show that if a convex function has a critical point, then it must have a global minima. We state the theorem as follow:
+
+Let $f:\mathbb{R}^n\to\mathbb{R}$ be convex and differentiable at $x^*$. If $\nabla f(x^*) = 0$, then $x^*$ is a global minima. Since $f$ is convex and differentiable at $x^*$ for any $x\in\mathbb{R}^n$, we can represent it in its first-order characterization[^2]:
+
+$$
+\begin{equation}
+f(x) \geq f(x^*) + \nabla f^T(x^*)(x-x^*)
+\end{equation}
+$$
+We have $\nabla f(x^*) = 0$:
+
+$$
+\begin{equation}
+f(x) \geq f(x^*) + 0(x-x^*) = f(x^*)
+\end{equation}
+$$
+As $f(x) \geq f(x^*)$ for any $x,x^*\in dom(f)$, $f(x^*)$ is a global minima. Given that RSS is convex and has a critical point, a minima always exist.
+
+Next, we show that while a minima always exists, it is not necessarily unique. 
+:::
+
+[^1]: Proof in this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-colata-colat) 
+[^2]: Derivation of the first-order characterization of a convex function is in this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
+
+

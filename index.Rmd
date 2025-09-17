@@ -1,0 +1,65 @@
+---
+title: "My Book Title"
+author: "Your Name"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+description: "This is a sample bookdown project demonstrating the basic structure."
+output:
+  bookdown::gitbook:
+    split_by: section
+    split_bib: true
+    config:
+      toc:
+        collapse: none
+        scroll_highlight: yes
+      split_level: 1
+      toolbar:
+        position: fixed
+  bookdown::pdf_book:
+    includes:
+      in_header: preamble.tex
+    latex_engine: xelatex
+    citation_package: natbib
+    keep_tex: yes
+  bookdown::epub_book: default
+---
+
+# Introduction
+
+As I was reading through the textbook for self-study, I was increasingly frustrated by the lack of explanations and steps in most of the important results and analysis within the text. Proofs are skipped due to "triviality", and even when it is not skipped, steps are often omitted for brevity. Furthermore, despite the widespread acclaim of this golden standard in the field of statistics, there is barely any documentations or helpful guides on solving most problems or theorems, leaving one having to consult an instructor. But for those without one, they are shit out of luck. The only few helps merely exist in the form of incomplete github repositories (hopefully, this will not end up as one) where the mathematics are often incorrect or non-rigorous and leaving much to be desired, or scattered lectures slides and latex pdfs like the Dead Sea Scrolls, sometimes leaving the reader with more questions than they started with. For the average student attempting to self-study this book, this is a hopeless hurdle that will and have probably turned many away.
+
+Hence, I wish to compile notes and proofs that I had personally written and share them to the masses. Why? So that students who are either studying this textbook in their courses or self-studying at home or work can at least refer to something when encountering difficulties in understanding concepts within the book. While I do not personally believe myself to be a great statisticians/mathematicians, nor do I dare to claim that my proofs are absolutely rigorous or accurate, I simply want to share my knowledge and aid others who are similarly frustrated by this well-loved text, yet still willing to struggle.
+
+## Prerequisites
+Test
+
+### Software Requirements
+
+You'll need the following packages:
+
+```{r eval=FALSE}
+install.packages(c("bookdown", "knitr", "rmarkdown"))
+```
+
+### Mathematical Notation
+
+This book follows standard mathematical conventions:
+
+- Input variables are denoted by $X$
+- Output variables are denoted by $Y$ 
+- Observed values are written in lowercase: $x_i$
+- Matrices are represented by bold letters: $\mathbf{X}$
+
+For example, the standard error can be calculated as:
+
+$$SE = \sqrt{\frac{p(1-p)}{n}}$$
+
+### Book Structure
+
+This book is organized into the following chapters:
+
+1. **Introduction** - Basic concepts and setup
+2. **Methods** - Core methodology 
+3. **Applications** - Practical examples
+4. **Conclusions** - Summary and future work
