@@ -1,0 +1,5 @@
+rmd_files: [
+  "index.Rmd",
+  "Chp2/overview.Rmd"]
+delete_merged_file: TRUE
+book_filename: "Textbook.Rmd"
