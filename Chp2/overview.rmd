@@ -4,6 +4,27 @@ output:
     toc: true
 ---
 
+```{r setup, include = FALSE}
+library(reticulate)
+library(bookdown)
+library(ElemStatLearn)
+library(MASS)
+library(ggplot2)
+library(class)
+
+set.seed(20021122)
+use_python("/Python313/python.exe")
+
+color <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+```
+
 # Overview of Supervised Learning
 
 ## Variable Types and Terminologies
@@ -54,6 +75,7 @@ $$
 \end{split}
 \end{equation}
 $$
+
 Swapping the LHS with the RHS term:
 
 $$
@@ -65,6 +87,7 @@ $$
 \end{split}
 \end{equation}
 $$
+
 A hyperplane is defined as $\textbf{w}^{T}\textbf{z}= b$. In our case, by letting $\textbf{w} = (\beta_1 \; \beta_2 \; ... \beta_n)^T$ and $\textbf{z}=(x_1 \; x_2 \;...\;\hat{Y})^T$, we obtain $\textbf{w}^{T}\textbf{z} = -\beta_0$ (our intercept $\beta_0$ translates the hyperplane away from the origin).
 :::
 
@@ -78,92 +101,217 @@ RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2
 (\#eq:RSS)
 \end{equation}
 $$
+
 $RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique. 
 
 :::{.remark}
-We first prove that a minimum always exists for the RSS:
+We first prove that a minimum always exists for the RSS by establishing that RSS is a convex function with at least one critical point, which guarantees a global minimum.
 
-We expand the quadratic form of the RSS:
+To analyze the structure of RSS, we expand the quadratic form:
 
 $$
 \begin{equation}
 RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2 = \sum_{i=1}^{N} (y_i^2 + (x_{i}^{T}\beta)^2 - 2y_ix_i^{T}\beta)
 \end{equation}
 $$
-By linearity of summation and the dot product identities $\sum_{i=1}^N x_ix_i^T= X^TX$ and $X^Ty = \sum_{i=1}^N x_iy_i$, we have:
+
+By linearity of summation and the dot product identities $\sum_{i=1}^N x_ix_i^T= \textbf{X}^T\textbf{X}$ and $\textbf{X}^T\textbf{y} = \sum_{i=1}^N x_iy_i$, this becomes:
 
 $$
 \begin{equation}
 \begin{split}
-RSS(\beta) &= \sum_{i=1}^{N} y_i^2 + \sum_{i=1}^{N}\beta^Tx_ix_i^T\beta - \sum_{i=1}^{N}2y_ix_i^{T}\beta)\\
-           &= ||y_i||^2 +\beta^TX^TX\beta - 2X^Ty\beta
+RSS(\beta) &= \sum_{i=1}^{N} y_i^2 + \sum_{i=1}^{N}\beta^Tx_ix_i^T\beta - \sum_{i=1}^{N}2y_ix_i^{T}\beta\\
+           &= ||\textbf{y}||^2 +\beta^T\textbf{X}^T\textbf{X}\beta - 2\textbf{X}^T\textbf{y}\beta
 \end{split}
 \end{equation}
 $$
 
-Next, we need to establish that a critical point exists and this critical point must necessarily be a minima. To determine a critical point, we use the gradient of RSS:
+To establish convexity for RSS, we show its Hessian matrix $\nabla^2 RSS(\beta) = 2\textbf{X}^T\textbf{X}$ is positive semidefinite as RSS is twice differentiable. A matrix M is positive semidefinite if $x^TMx \geq 0$ for all $x$ in $\mathbb{R}^n$. As:
+
+$$
+\begin{equation}
+v^T\textbf{X}^T\textbf{X}v = (\textbf{X}v)^T\textbf{X}v = ||\textbf{X}v||^2\geq0
+\end{equation}
+$$
+
+, we showed that RSS is convex.
+
+Next, we need to establish that a critical point exists and this critical point must necessarily be a minimum. To find a critical point, we compute the gradient[^1]:
 
 $$
 \begin{equation}
 \begin{split}
-\nabla_{\beta}RSS(\beta) &= -2X^T(y-X\beta) \\
-                         &= -2X^Ty + 2X^TX\beta
+\nabla_{\beta}RSS(\beta) &= -2\textbf{X}^T(\textbf{y}-\textbf{X}\beta) \\
+                         &= -2\textbf{X}^T\textbf{y} + 2\textbf{X}^T\textbf{X}\beta
 \end{split}
 \end{equation}
 $$
 
-Thus a critical point must satisfy the normal equation:
+Thus, a critical point must satisfy the normal equation $\textbf{X}^T\textbf{y} = \textbf{X}^T\textbf{X}\beta$. The problem of determining the existence of a critical point can now be reduced to a simple problem of determining that the normal equation is consistent:
+
+A linear system $Ax = b$ has a solution if and only if $b \in \text{Col}(A)$. For the normal equations $\textbf{X}^T\textbf{X}\beta = \textbf{X}^T\textbf{y}$, we need $\textbf{X}^T\textbf{y} \in \text{col}(\textbf{X}^T\textbf{X})$. Since $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$[^2] and $\textbf{X}^T\textbf{y}$ is, by definition, a linear combination of the columns of $\textbf{X}^T$, we have $\textbf{X}^T\textbf{y} \in \text{Col}(\textbf{X}^T) = \text{Col}(\textbf{X}^T\textbf{X})$. Since a consistent system has at least one solution, RSS always has at least one critical point.
+
+Lastly, we show that for convex functions, any critical point is necessarily a global minimum. Let $f:\mathbb{R}^n\to\mathbb{R}$ be convex and differentiable at $x^*$ for any $x\in\mathbb{R}^n$, and $\nabla f(x^*) = 0$, then $x^*$ is a global minimum. By the first-order characterization of convexity[^3]:
 
 $$
 \begin{equation}
-X^Ty = X^TX\beta
+f(x) \geq f(x^*) + \nabla f^T(x^*)(x-x^*) =  f(x^*) + 0(x-x^*) = f(x^*)
 \end{equation}
 $$
-The problem of determining the existence of a minimiser can thus be reduced to a simple problem of determining that the normal equation is consistent:
 
-A linear system $Ax = b$ has a solution if and only if $b \in \text{col}(A)$. For the normal equations $X^TX\beta = X^Ty$, we need $X^Ty \in \text{col}(X^TX)$. Since $\text{col}(X^TX) = \text{col}(X^T)$[^1] and $X^Ty$ is, by definition, a linear combination of the columns of $X^T$, we have $X^Ty \in \text{col}(X^T) = \text{col}(X^TX)$. Therefore, the normal equation is normal and a minimiser exists.
+As $f(x) \geq f(x^*)$ for any $x,x^*\in dom(f)$, $f(x^*)$ is a global minimum. Therefore a minimum always exists for RSS.
 
-Next, we show that the RSS is convex. A twice-differentiable function $f: \mathbb{R}^n \to \mathbb{R}$ is convex if its Hessian matrix is positive semi-definite everywhere.
+However, this minimum is not necessarily unique. The uniqueness depends entirely on whether $\textbf{X}^T\textbf{X}$ is invertible, leading to two cases:
 
-The Hessian matrix of the RSS is:
+Case 1: $\textbf{X}^T\textbf{X}$ is invertible:
+
+If the matrix $\textbf{X}^T\textbf{X}$ is invertible, then:
 
 $$
 \begin{equation}
-\nabla_{\beta}^2\,RSS(\beta) = 2X^TX
+\hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
 \end{equation}
-$$
+$$ 
 
-A matrix M is positive semi-definite if $x^TMx \geq 0$ for all $x$ in $\mathbb{R}^n$. Let $v\in\mathbb{R}^n$, we show that this is true for the Hessian matrix:
+, and $\hat{\beta}$ is a unique solution.
+
+Case 2: $\textbf{X}^T\textbf{X}$ is singular:
+
+When $\textbf{X}^T\textbf{X}$ is singular, $\text{Ker}(\textbf{X}^T\textbf{X})$ is nontrivial. If $\beta_0$ is a solution to the normal equation and $\beta^*\in\text{Ker}(\textbf{X}^T\textbf{X})$, such that $\textbf{X}^T\textbf{X}\beta^* = 0$, then:
 
 $$
 \begin{equation}
-v^TX^TXv = (vX)^TXv = ||vX||^2\geq0
+\begin{split}
+\textbf{X}^T\textbf{X}(\beta_0 + \beta^*) = \textbf{X}^T\textbf{X}\beta_0 + \textbf{X}^T\textbf{X}\beta^* = \textbf{X}^T\textbf{y} + 0 = \textbf{X}^T\textbf{y}
+\end{split}
 \end{equation}
 $$
-Thus, the RSS is convex and has a critical point. 
 
-Finally, we show that if a convex function has a critical point, then it must have a global minima. We state the theorem as follow:
+Hence $\beta_0 + \beta^*$ is itself a solution and it forms the solution set $\{\beta_0 + \beta^*|\textbf{X}^T\textbf{X}\beta = \textbf{X}^T\textbf{y} \wedge \beta^*\in \text{Ker}(\textbf{X}^T\textbf{X})\}$. Since $\text{Ker}(\textbf{X}^T\textbf{X})$ is a nontrivial linear subspace and has infinitely many elements[^4], the solution set forms an affine subspace with infinitely many elements.
 
-Let $f:\mathbb{R}^n\to\mathbb{R}$ be convex and differentiable at $x^*$. If $\nabla f(x^*) = 0$, then $x^*$ is a global minima. Since $f$ is convex and differentiable at $x^*$ for any $x\in\mathbb{R}^n$, we can represent it in its first-order characterization[^2]:
-
-$$
-\begin{equation}
-f(x) \geq f(x^*) + \nabla f^T(x^*)(x-x^*)
-\end{equation}
-$$
-We have $\nabla f(x^*) = 0$:
-
-$$
-\begin{equation}
-f(x) \geq f(x^*) + 0(x-x^*) = f(x^*)
-\end{equation}
-$$
-As $f(x) \geq f(x^*)$ for any $x,x^*\in dom(f)$, $f(x^*)$ is a global minima. Given that RSS is convex and has a critical point, a minima always exist.
-
-Next, we show that while a minima always exists, it is not necessarily unique. 
+Hence, while the minimum always exists, it is only unique when $\textbf{X}^T\textbf{X}$ is invertible.
 :::
 
-[^1]: Proof in this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-colata-colat) 
-[^2]: Derivation of the first-order characterization of a convex function is in this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
+As shown in the previous remark, RSS($\beta$) can be written in matrix notation:
+
+$$
+\begin{equation}
+\begin{split}
+\text{RSS}(\beta) &= \textbf{y}^T\textbf{y} +\beta^T\textbf{X}^T\textbf{X}\beta - 2\textbf{X}^T\textbf{y}\beta\\
+                  &= (\textbf{y}-\textbf{X}^T\beta)^T(y-\textbf{X}^T\beta)
+\end{split}
+(\#eq:RSSmatrix)
+\end{equation}
+$$
+
+where $\textbf{X}$ is an $N \times p$ matrix with each row an input vector, ,and $\textbf{y}$ is an $N$-vector of the outputs in the training set. Differentiating[^1] w.r.t $\beta$ we get the normal equations:
+
+$$
+\begin{equation}
+\textbf{X}^T(\textbf{y} - \textbf{X}\beta) = 0
+(\#eq:normeq)
+\end{equation}
+$$
+If $\textbf{X}^T\textbf{X}$ is nonsingular, then we get the unique solution:
+
+$$
+\begin{equation}
+\hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
+\end{equation}
+(\#eq:normsol)
+$$ 
+
+and the fitted value at the $i$th input $x_i$ is $\hat{y}_i = \hat{y}_i(x_i) = x^{T}_i\hat{\beta}$. At an arbitrary input $x_0$, the prediction is $\hat{y}_i(x_0) = x^{T}_0\hat{\beta}$. The entire fitted surface is characterized by the $p$ parameters $\hat{\beta}$.[^5] It seems that we may not need a very large data set to fit such a model. 
+
+### Linear Model Simulation 
+
+We simulate a data set with an output class variable $G$ with the values `r color("BLUE", "blue")` or `r color("ORANGE", "orange")`. There are 100 points in each of the two classes. We fit a linear regression model to these values, with the response $Y$ coded as $0$ for `r color("BLUE", "blue")` and $1$ for `r color("ORANGE", "orange")`. The fitted values $\hat{Y}$ are converted to a fitted class variable $\hat{G}$ according to the rule
+
+$$
+\begin{equation}
+\hat{G} = 
+\begin{cases}
+\text{ORANGE} & \hat{Y} > 0.5\\
+\text{BLUE} & \hat{Y} \leq 0.5
+\end{cases}
+\end{equation}
+$$
+
+We first demonstrate the method of how the simulated data set is generated: 
+
+```{r, warning=FALSE}
+# Generate data set of n=20 from two bivariate normal distribution
+d1 <- mvrnorm(n=10, c(1,0), diag(2)) #BLUE
+d2 <- mvrnorm(n=10, c(0,1), diag(2)) #ORANGE
+
+gen_obs <- function(mean, nobs){
+  obs <- c()
+  for (i in 1:nobs){
+    row_mean <- mean[sample(1:10, 1), ]
+    newobs <- mvrnorm(n=1, row_mean, diag(1/5, 2, 2))
+    obs <- rbind(obs, unname(newobs))
+  }
+  
+  colnames(obs) <- c("x1", "x2")
+  return(obs)
+}
+
+d1_obs <- gen_obs(d1, 100)
+d2_obs <- gen_obs(d2, 100)
+Y <- rep(c(0,1), each=100) # 0=BLUE, 1=ORANGE
+test_mat <- as.data.frame(cbind(Y, rbind(d1_obs, d2_obs)))
+test_mat$Y <- factor(test_mat$Y, labels = c("Blue", "Orange"))
+```
+
+We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for orange class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for blue class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
+
+```{r linearmodel}
+grid_size <- 50
+x1_range <- range(test_mat$x1)
+x2_range <- range(test_mat$x2)
+grid_x1 <- seq(x1_range[1] - 1, x1_range[2] + 1, length.out = grid_size)
+grid_x2 <- seq(x2_range[1] - 1, x2_range[2] + 1, length.out = grid_size)
+grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2) 
+
+# Fit simple linear model
+lm_data <- data.frame(Y = as.numeric(test_mat$Y == "Orange"), x1 = test_mat$x1, x2 = test_mat$x2)
+boundary_model <- lm(Y ~ x1 + x2, data = lm_data)
+
+grid_predictions <- predict(boundary_model, grid_data)
+grid_data$predicted_class <- ifelse(grid_predictions > 0.5, "Orange", "Blue")
+
+# Create the plot with background
+p <- ggplot() +
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+             size = 0.5, alpha = 0.5) +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+             size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
+  scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_line(color = "grey90", size = 0.5, linetype = "dotted"),
+    panel.grid.minor = element_line(color = "grey95", size = 0.3, linetype = "dotted"),
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  coord_fixed(ratio = 0.75)
+
+# Add decision boundary line
+boundary_slope <- -coef(boundary_model)[2] / coef(boundary_model)[3]
+boundary_intercept <- (0.5 - coef(boundary_model)[1]) / coef(boundary_model)[3]
+
+p + geom_abline(slope = boundary_slope, intercept = boundary_intercept, 
+                color = "black", linewidth = 1)
+```
+
+
+[^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
+[^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
+[^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
+[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is closed under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements 
+[^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. Example: A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where the possible value resides. Whereas, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
 
 
