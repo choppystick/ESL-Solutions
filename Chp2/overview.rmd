@@ -1,6 +1,6 @@
 ---
 output: 
-  html_document: 
+  html_document2: 
     toc: true
 ---
 
@@ -61,8 +61,10 @@ $$
 
 where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_n\end{pmatrix}\in\mathbb{R^{n+1}}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_n\end{pmatrix}\in\mathbb{R}^{n+1}$, such that $\hat{Y} = \sum_{i=0}^{n}\hat{\beta}_i x_i$. 
 
-If $\textbf{X}$ is instead a feature matrix with $p$ features and $m$ samples such that $\textbf{X}\in\mathbb{R^{m\times p}}$, where $p=n+1$, we can represent $\textbf{X}^{T}$ as a $p$-dimensional row vector $\begin{bmatrix} X_0 \; X_1 \; X_2 \; ... \; X_n \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R^m}$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(m)}]$ and $X_0$ is a constant vector of $1$. In this case, suppose that $\hat{Y}$ is a $k$-dimensional row vector instead of a scalar, then by equation \@ref(eq:leq), $\beta$ must necessarily be a $p \times K$ matrix of coefficients.
+If $\textbf{X}$ is instead a feature matrix with $p$ features and $m$ samples such that $\textbf{X}\in\mathbb{R^{m\times p}}$, where $p=n+1$, we can represent $\textbf{X}^{T}$ as a $p$-dimensional row vector $\begin{bmatrix} X_0 \; X_1 \; X_2 \; ... \; X_n \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R^m}$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(m)}]$, $X_0$ is a constant vector of $1$ and suppose that $\hat{Y}$ is a $k$-dimensional row vector instead of a scalar, then by equation \@ref(eq:leq), $\beta$ must necessarily be a $p \times K$ matrix of coefficients.
 
+<details>
+<summary>Remark on linear model as a hyperplane.</summary>
 :::{.remark}
 In the $(p+1)$-dimensional input-output space, the tuple $(X, \hat{Y})$ represents a hyperplane. This follows directly from the linear structure of equation \@ref(eq:leqvec):
 
@@ -90,6 +92,7 @@ $$
 
 A hyperplane is defined as $\textbf{w}^{T}\textbf{z}= b$. In our case, by letting $\textbf{w} = (\beta_1 \; \beta_2 \; ... \beta_n)^T$ and $\textbf{z}=(x_1 \; x_2 \;...\;\hat{Y})^T$, we obtain $\textbf{w}^{T}\textbf{z} = -\beta_0$ (our intercept $\beta_0$ translates the hyperplane away from the origin).
 :::
+</details>
 
 ### Residual Sum of Squares
 
@@ -104,6 +107,8 @@ $$
 
 $RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique. 
 
+<details>
+<summary>Remark on the existence and non-uniqueness of a minimum for RSS</summary>
 :::{.remark}
 We first prove that a minimum always exists for the RSS by establishing that RSS is a convex function with at least one critical point, which guarantees a global minimum.
 
@@ -191,8 +196,9 @@ Hence $\beta_0 + \beta^*$ is itself a solution and it forms the solution set $\{
 
 Hence, while the minimum always exists, it is only unique when $\textbf{X}^T\textbf{X}$ is invertible.
 :::
-
-As shown in the previous remark, RSS($\beta$) can be written in matrix notation:
+</details>
+<br>
+As shown previously, $\text{RSS}(\beta)$ can be written in the matrix notation:
 
 $$
 \begin{equation}
@@ -204,7 +210,7 @@ $$
 \end{equation}
 $$
 
-where $\textbf{X}$ is an $N \times p$ matrix with each row an input vector, ,and $\textbf{y}$ is an $N$-vector of the outputs in the training set. Differentiating[^1] w.r.t $\beta$ we get the normal equations:
+where $\textbf{X}$ is an $N \times p$ matrix with each row an input vector, ,and $\textbf{y}$ is an $N$-vector of the outputs in the training set. Differentiating w.r.t $\beta$ we get the normal equations:
 
 $$
 \begin{equation}
@@ -237,7 +243,17 @@ $$
 \end{equation}
 $$
 
-We first demonstrate the method of how the simulated data set is generated: 
+There are multiple scenarios where our constructed data can come from, but we outline here specifically two types:
+
+$\textbf{Scenario 1}$: The training data in each class were generated from bivariate Gaussian distributions with uncorrelated components and different means. 
+
+In other words, our data is generated from each class $j$ with fixed mean $\mu^{(j)}$ and covariance $\Sigma^{(j)}$, and each observation $i$ is distributed with $X_i|Y=j \sim N(\mu^{(j)}, \Sigma^{(j)})$. Therefore, $P(X|Y=j) = \phi(x;\mu^{(j)},\Sigma^{(j)})$.
+
+$\textbf{Scenario 2}$: The training data in each class came from a mixture of 10 low-variance Gaussian distributions, with individual means themselves distributed as Gaussian. 
+
+Essentially, we have $10$ random cluster locations $\mu_k^{(j)}$ per class, each distributed around a class specific mean $\mu^{(j)}$ with covariance $\Sigma^{(j)}$. Then for each cluster location, we generate an observation $X_i$ where $X_i|\text{Location}=k,Y=j \sim N(\mu_k^{(j)}, \Sigma)$ where $\Sigma$ is the variance of the mixture distribution. Therefore, $P(X|Y=j) = \sum_{k=1}^{10}\pi_k\phi(x;\mu_k^{(j)},\Sigma)$, where $\pi_k$ is the weight of the cluster (How likely/prominent this cluster is).
+
+We first demonstrate the method of how our simulated data set is generated: 
 
 ```{r, warning=FALSE}
 # Generate data set of n=20 from two bivariate normal distribution
@@ -263,9 +279,10 @@ test_mat <- as.data.frame(cbind(Y, rbind(d1_obs, d2_obs)))
 test_mat$Y <- factor(test_mat$Y, labels = c("Blue", "Orange"))
 ```
 
-We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for orange class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for blue class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
+We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
 
-```{r linearmodel}
+```{r linearmodel, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
+# Create points grid
 grid_size <- 50
 x1_range <- range(test_mat$x1)
 x2_range <- range(test_mat$x2)
@@ -289,9 +306,9 @@ p <- ggplot() +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
   theme_minimal() +
   theme(
-    panel.grid.major = element_line(color = "grey90", size = 0.5, linetype = "dotted"),
-    panel.grid.minor = element_line(color = "grey95", size = 0.3, linetype = "dotted"),
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+    panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
+    panel.grid.minor = element_line(color = "grey95", linewidth = 0.3, linetype = "dotted"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
     legend.position = "none",
     axis.title = element_blank(),
     axis.text = element_blank(),
@@ -307,11 +324,24 @@ p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
                 color = "black", linewidth = 1)
 ```
 
+In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta}\gt0.5\}$, and the two predicted classes are separated by the linear $\textit{decision boundary}\;\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
+
+### Nearest-Neighbor Methods
+The nearest-neighborhood methods use observations in the training set $\mathcal{T}: \{(x_i, y_i), i=1,2,...,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor fit for $\hat{Y}$ as:
+
+$$
+\hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
+
+$$
+
+, where $N_k(x)$ is the neighborhood of $x$ defined by the $k$ closest points $x_i$ in the training sample, where . In this case, we quantify closeness with the Euclidean norm $||x||_2$. 
+
+
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
 [^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
 [^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is closed under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements 
-[^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. Example: A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where the possible value resides. Whereas, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
+[^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. Example: A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where all possible values reside. On the other hand, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
 
 
