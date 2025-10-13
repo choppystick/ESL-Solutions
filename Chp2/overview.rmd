@@ -322,7 +322,7 @@ p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
 In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta}\gt0.5\}$, and the two predicted classes are separated by the linear $\textit{decision boundary}\;\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
 
 ### Nearest-Neighbor Methods
-The nearest-neighborhood methods use observations in the training set $\mathcal{T}: \{(x_i, y_i),\;i=1,2,...,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor as
+The nearest-neighborhood methods use observations in the training set $\mathcal{T}: \{(x_i, y_i),\;i=1,2,...,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor fit for $\hat{Y}$ as
 
 $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
