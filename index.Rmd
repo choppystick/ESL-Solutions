@@ -7,6 +7,7 @@ documentclass: book
 description: "This is a sample bookdown project demonstrating the basic structure."
 output:
   bookdown::gitbook:
+    css: style.css
     split_by: section
     split_bib: true
     config:
@@ -16,6 +17,7 @@ output:
       split_level: 1
       toolbar:
         position: fixed
+    
   bookdown::pdf_book:
     includes:
       in_header: preamble.tex

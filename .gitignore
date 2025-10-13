@@ -1,7 +1,8 @@
+*.html
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 renv/
 _book/
-.html
+Textbook_files/
