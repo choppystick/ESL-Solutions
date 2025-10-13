@@ -1,8 +1,3 @@
----
-output: 
-  html_document2: 
-    toc: true
----
 
 ```{r setup, include = FALSE}
 library(reticulate)
@@ -344,7 +339,7 @@ can further define $k$-NN more formally as:
 Given test point $\textbf{x}$, we define the set of the $k$ nearest neighbors of the neighborhood $N_k$. $N_k$ is formally defined as $N_k \subseteq D$ s.t. $|N_k| = k$. Furthermore, given $\forall(\textbf{x}', y') \in D\backslash N_k$,[^7]
 
 $$
-d(\textbf{x}, \textbf{x}') \geq \argmax_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'')
+d(\textbf{x}, \textbf{x}') \geq \operatorname*{argmax}_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'')
 $$
 
 We can now define a classifier $h$ as a function returning the most common label in $N_k$:
