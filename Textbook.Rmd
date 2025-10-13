@@ -1,4 +1,44 @@
 ---
+title: "My Book Title"
+author: "Your Name"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+description: "This is a sample bookdown project demonstrating the basic structure."
+output:
+  bookdown::gitbook:
+    css: style.css
+    split_by: section
+    split_bib: true
+    config:
+      toc:
+        collapse: none
+        scroll_highlight: yes
+      split_level: 1
+      toolbar:
+        position: fixed
+  bookdown::pdf_book:
+    includes:
+      in_header: preamble.tex
+    latex_engine: xelatex
+    citation_package: natbib
+    keep_tex: yes
+  bookdown::epub_book: default
+---
+
+# Introduction
+
+Placeholder
+
+
+## Prerequisites
+### Software Requirements
+### Mathematical Notation
+### Book Structure
+
+<!--chapter:end:index.Rmd-->
+
+---
 output: 
   html_document2: 
     toc: true
@@ -369,4 +409,7 @@ $p = 1$: Manhattan Distance <br>
 $p = 2$: Euclidean Distance <br>
 $p \rightarrow \infty$: Chebyshev Distance
 [^7]: Every point in $D$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
+
+
+<!--chapter:end:Chp2/overview.Rmd-->
 
