@@ -347,7 +347,7 @@ We can now define a classifier $h$ as a function returning the most common label
 $$
 h(\textbf{x}) = \text{mode}(\{y'': (x', y') \in N_k\})
 $$
-, where we classify the neighborhood by the label of the highest occurrence.
+, where we classify the neighborhood by the label of the highest occurrence. test.
 
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
