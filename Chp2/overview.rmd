@@ -235,6 +235,7 @@ $$
 \text{ORANGE} & \hat{Y} > 0.5\\
 \text{BLUE} & \hat{Y} \leq 0.5
 \end{cases}
+(\#eq:classlabel)
 \end{equation}
 $$
 
@@ -328,15 +329,15 @@ $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
 $$
 
-, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6] 
+, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6]. Similarly, the fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@(eq:classlabels).
 
 ```{r KNNexample, echo=FALSE, fig.align="center", fig.cap="Example of a 3-NN algorithm."}
 knitr::include_graphics("C:\\Users\\samuel.chan17\\Documents\\ESL-Solutions\\Chp2\\pictures\\note2_1.png")
 ```
-We 
-can further define $k$-NN more formally as:
 
-Given test point $\textbf{x}$, we define the set of the $k$ nearest neighbors of the neighborhood $N_k$. $N_k$ is formally defined as $N_k \subseteq D$ s.t. $|N_k| = k$. Furthermore, given $\forall(\textbf{x}', y') \in D\backslash N_k$,[^7]
+We can further define $k$-NN more formally as:
+
+Given test point $\textbf{x}$, we define the set of the $k$ nearest neighbors of the neighborhood $N_k$. $N_k$ is formally defined as $N_k \subseteq \mathcal{T}$ s.t. $|N_k| = k$. Furthermore, given $\forall(\textbf{x}', y') \in \mathcal{T}\backslash N_k$,[^7]
 
 $$
 d(\textbf{x}, \textbf{x}') \geq \operatorname*{argmax}_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'')
@@ -347,7 +348,14 @@ We can now define a classifier $h$ as a function returning the most common label
 $$
 h(\textbf{x}) = \text{mode}(\{y'': (x', y') \in N_k\})
 $$
-, where we classify the neighborhood by the label of the highest occurrence. test.
+
+, where we classify the neighborhood by the label of the highest occurrence.
+
+```{r knn, warning=False}
+
+```
+
+
 
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
@@ -363,5 +371,5 @@ Special cases include: <br>
 $p = 1$: Manhattan Distance <br>
 $p = 2$: Euclidean Distance <br>
 $p \rightarrow \infty$: Chebyshev Distance
-[^7]: Every point in $D$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
+[^7]: Every point in $\mathcal{T}$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
 
