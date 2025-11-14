@@ -7,7 +7,7 @@ library(ggplot2)
 library(class)
 
 set.seed(20021122)
-use_python("/Python313/python.exe")
+use_python("C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe")
 
 color <- function(x, color) {
   if (knitr::is_latex_output()) {
@@ -272,19 +272,19 @@ d2_obs <- gen_obs(d2, 100)
 Y <- rep(c(0,1), each=100) # 0=BLUE, 1=ORANGE
 test_mat <- as.data.frame(cbind(Y, rbind(d1_obs, d2_obs)))
 test_mat$Y <- factor(test_mat$Y, labels = c("Blue", "Orange"))
-```
 
-We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
-
-```{r linearmodel, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
-# Create points grid
-grid_size <- 50
+# Generate points grid 
+grid_size <- 100
 x1_range <- range(test_mat$x1)
 x2_range <- range(test_mat$x2)
 grid_x1 <- seq(x1_range[1] - 1, x1_range[2] + 1, length.out = grid_size)
 grid_x2 <- seq(x2_range[1] - 1, x2_range[2] + 1, length.out = grid_size)
 grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2) 
+```
 
+We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
+
+```{r linearmodel, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
 # Fit simple linear model
 lm_data <- data.frame(Y = as.numeric(test_mat$Y == "Orange"), x1 = test_mat$x1, x2 = test_mat$x2)
 boundary_model <- lm(Y ~ x1 + x2, data = lm_data)
@@ -328,10 +328,10 @@ $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
 $$
 
-, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6]. Similarly, the fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@(eq:classlabels).
+, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6]. Similarly, the fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@(eq:classlabel).
 
 ```{r KNNexample, echo=FALSE, fig.align="center", fig.cap="Example of a 3-NN algorithm."}
-knitr::include_graphics("C:\\Users\\samuel.chan17\\Documents\\ESL-Solutions\\Chp2\\pictures\\note2_1.png")
+knitr::include_graphics("Chp2/pictures/note2_1.png")
 ```
 
 We can further define $k$-NN more formally as:
@@ -350,26 +350,43 @@ $$
 
 , where we classify the neighborhood by the label of the highest occurrence.
 
-```{r knn, warning=False}
+```{r knn, warning=FALSE}
+train_features <- test_mat[, c("x1", "x2")]
+train_labels <- test_mat$Y
 
+# knn implementation 
+knn_model <- knn(train = train_features, test = grid_data[, c("x1", "x2")], cl = train_labels, k=15)
+grid_data$predicted_class <- knn_model
+grid_data$pred_numeric <- as.numeric(knn_model == "Orange")
+
+# Create the plot with background
+ggplot() +
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+             size = 0.5, alpha = 0.5) +
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
+             breaks = 0.5, size = 0.8, color = "black") +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+             size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
+  scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
+    panel.grid.minor = element_line(color = "grey95", linewidth = 0.3, linetype = "dotted"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  coord_fixed(ratio = 0.75)
 ```
-
-
-
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
 [^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
-[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is closed under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements 
-[^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. Example: A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where all possible values reside. On the other hand, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
-[^6]: Generally, the distance metric is specified by the Minkowski distance]
-
-$$
-d(\textbf{x}, \textbf{z}) = (\sum_{r=1}^N |x_i - z_i|^p)^{\frac{1}{p}}
-$$  
-Special cases include: <br>
-$p = 1$: Manhattan Distance <br>
-$p = 2$: Euclidean Distance <br>
-$p \rightarrow \infty$: Chebyshev Distance
+[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements 
+[^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. : A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where all possible values reside. On the other hand, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
+[^6]: Generally, the distance metric is specified by the Minkowski distance  
+    $d(\textbf{x}, \textbf{z}) = (\sum_{r=1}^N |x_i - z_i|^p)^{\frac{1}{p}}$  
+    Special cases include: $p = 1$ (Manhattan Distance), <br> $p = 2$ (Euclidean Distance), <br> $p \rightarrow \infty$ (Chebyshev Distance).
 [^7]: Every point in $\mathcal{T}$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
-
