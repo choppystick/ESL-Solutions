@@ -293,12 +293,13 @@ grid_predictions <- predict(boundary_model, grid_data)
 grid_data$predicted_class <- ifelse(grid_predictions > 0.5, "Orange", "Blue")
 
 # Create the plot with background
-p <- ggplot() +
+p <- ggplot() + 
   geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
              size = 0.5, alpha = 0.5) +
   geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  labs(title="Linear Regression") +
   theme_minimal() +
   theme(
     panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
@@ -307,7 +308,8 @@ p <- ggplot() +
     legend.position = "none",
     axis.title = element_blank(),
     axis.text = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    plot.title = element_text(hjust=0.5)
   ) +
   coord_fixed(ratio = 0.75)
 
@@ -328,7 +330,7 @@ $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
 $$
 
-, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6]. Similarly, the fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@(eq:classlabel).
+, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6] The fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@ref(eq:classlabel).
 
 ```{r KNNexample, echo=FALSE, fig.align="center", fig.cap="Example of a 3-NN algorithm."}
 knitr::include_graphics("Chp2/pictures/note2_1.png")
@@ -347,10 +349,9 @@ We can now define a classifier $h$ as a function returning the most common label
 $$
 h(\textbf{x}) = \text{mode}(\{y'': (x', y') \in N_k\})
 $$
-
 , where we classify the neighborhood by the label of the highest occurrence.
 
-```{r knn, warning=FALSE}
+```{r knn1, warning=FALSE, fig.cap="The classes are fit by 15-nearest neighbor averaging. The predicted class is chosen by majority vote amongst lthe 15-nearest neighbor."}
 train_features <- test_mat[, c("x1", "x2")]
 train_labels <- test_mat$Y
 
@@ -368,6 +369,7 @@ ggplot() +
   geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  labs(title="15-Nearest Neighbor Classifier") + 
   theme_minimal() +
   theme(
     panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
@@ -376,11 +378,50 @@ ggplot() +
     legend.position = "none",
     axis.title = element_blank(),
     axis.text = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    plot.title = element_text(hjust = 0.5)
   ) +
   coord_fixed(ratio = 0.75)
 ```
 
+In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linearmodel), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} \gt 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
+
+```{r knn2, echo=FALSE, fig.cap="Classes are coded as a binary variable and then predicted by 1-nearest neighbor classification."}
+# knn implementation 
+knn_model <- knn(train = train_features, test = grid_data[, c("x1", "x2")], cl = train_labels, k=1)
+grid_data$predicted_class <- knn_model
+grid_data$pred_numeric <- as.numeric(knn_model == "Orange")
+
+# Create the plot with background
+ggplot() +
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+             size = 0.5, alpha = 0.5) +
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
+             breaks = 0.5, size = 0.8, color = "black") +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+             size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
+  labs(title="1-Nearest Neighbor Classifier") + 
+  scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
+    panel.grid.minor = element_line(color = "grey95", linewidth = 0.3, linetype = "dotted"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  coord_fixed(ratio = 0.75)
+```
+
+Figure \@ref(fig:knn2) instead shows the result for 1-nearest neighbor classification: $\hat{Y}$ is assigned the value $y_{\ell}$ of the closest point $x_{\ell}$ to $x$ in the training data. This corresponds to a Voronoi tessellation of the training data. Each point $x_i$ has an associated Voroni cell bounding the region where it is the only closest neighbor to any test point, such that, for all points $x$ in the cell, $\hat{G}(x) = g_i$. Compared to Figure \@ref(fig:knn1), the decision boundary is even more irregular. The training error is approximately an increasing function of k, and is always $0$ for $k=1$. As a consequence, we cannot use sum-of-squared errors on the training set as a criterion for picking $k$, as this would always result in picking $k=1$. 
+
+It appears that $k$-nearest neighbor fits have a single parameter, which is the number of neighbors $k$, compared to the $p$ parameters in least-squares fit. However, the effective number of parameters of $k$-nn is $N/k$ and is generally bigger than $p$, which decreases with increasing $k$. Consider the hypothetical case where the neighborhoods are non-overlapping, given $N$ training points and $k$ points per neighborhood, we will have $N/k$ neighborhoods and, a majority vote will be casted for each neighborhood, which effectively constitutes a parameter.
+
+```{r misclassification, }
+```
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
 [^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
