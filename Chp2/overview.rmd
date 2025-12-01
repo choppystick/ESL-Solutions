@@ -510,7 +510,7 @@ $$
 \begin{equation}
 \begin{split}
 \text{EPE}(f) &= \text{E}[(Y-f(X))^2] \\
-       &= \int (y-f(x))^2 \text{Pr}(dx,dy)
+       &= \int (y-f(x))^2\text{Pr}(dx,dy)
 \end{split}
 \end{equation}
 $$
@@ -574,7 +574,10 @@ $$
 f(x) = \text{E}_{Y|X}[Y|X=x]
 \end{equation}
 $$
-### Optimal Function of Linear Models
+
+### Optimal Function of Nearest-Neighbor Methods and Linear Models
+
+
 
 Assuming that the regression function $f(x)$ is approximately linear:
 
@@ -583,7 +586,7 @@ $$
 f(x) \approx x^{T}\beta
 \end{equation}
 $$
-We plug this linear model into $\text{EPE}$ and, by differentiating, we can solve for $\beta$:
+We plug this linear model into $\text{EPE}$,
 
 $$
 \begin{equation}
@@ -595,13 +598,41 @@ $$
 \end{equation}
 $$
 
-Writing the terms in matrix notation, we get:
+We now differentiate in terms of $\beta$ (See the appendix for this chapter for the justification of the interchangeability of the derivative and integral sign), 
 
 $$
 \begin{equation}
-\text{EPE}(f) = \text{E}[\textbf{y}^T\textbf{y} + \beta^T\textbf{x}^T\textbf{x}\beta - 2\beta^T \textbf{y}^T\textbf{x}\textbf{x}^T\textbf{y}\beta]
+\begin{split}
+\frac{\partial\text{EPE}(f)}{\partial \beta} &= \frac{\partial}{\partial\beta}\int (Y^2 + (x^T\beta)^2 -2x^TY\beta)\;\text{Pr}(dx,dy) \\
+                                             &= \int\frac{\partial}{\partial\beta}(Y^2 + \beta^Txx^T\beta - 2x^TY\beta)\;\text{Pr}(dx,dy)
+\end{split}
 \end{equation}
 $$
+
+By linearity of the integrals and derivatives,
+
+$$
+\begin{equation}
+\begin{split}
+\frac{\partial\text{EPE}(f)}{\partial \beta} &= \int\frac{\partial}{\partial\beta}Y^2 + \int\frac{\partial}{\partial\beta}\beta^Txx^T\beta - \int\frac{\partial}{\partial\beta}(2x^TY\beta) \\
+                                             &= 0 + \int2xx^T\beta - \int\frac{\partial}{\partial\beta}2Yx^T\beta \quad (\text{Using the identity:}\;\frac{\partial}{\partial\beta}\beta^Txx^T\beta = 2xx^T\beta)\\ 
+                                             &= 2\beta\int xx^T - 2\int\frac{\partial}{\partial\beta} Y\beta^Tx \quad \text{(Dot product is commutative)} \\
+                                             &= 2\beta\text{E}[XX^T] - 2\text{E}[YX] \quad (\frac{\partial}{\partial\beta}\beta^Tx = \frac{\partial}{\partial\beta}\sum\beta_ix_i = \sum x_i)
+\end{split}
+\end{equation}
+$$
+
+Setting $\frac{\partial\text{EPE}(f)}{\partial \beta} = 0$ to find the optimal value,
+
+$$
+\begin{equation}
+\begin{split}
+2\beta\text{E}[XX^T] &= 2\text{E}[XY] \\
+\beta &= (\text{E}[XX^T])^{-1}\text{E[XY]}
+\end{split}
+\end{equation}
+$$
+
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
