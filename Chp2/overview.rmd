@@ -575,9 +575,11 @@ f(x) = \text{E}_{Y|X}[Y|X=x]
 \end{equation}
 $$
 
-### Optimal Function of Nearest-Neighbor Methods and Linear Models
+### Optimal Function of Nearest-Neighbor Method
 
 
+
+### Optimal Function of Linear Model
 
 Assuming that the regression function $f(x)$ is approximately linear:
 
@@ -617,7 +619,7 @@ $$
 \frac{\partial\text{EPE}(f)}{\partial \beta} &= \int\frac{\partial}{\partial\beta}Y^2 + \int\frac{\partial}{\partial\beta}\beta^Txx^T\beta - \int\frac{\partial}{\partial\beta}(2x^TY\beta) \\
                                              &= 0 + \int2xx^T\beta - \int\frac{\partial}{\partial\beta}2Yx^T\beta \quad (\text{Using the identity:}\;\frac{\partial}{\partial\beta}\beta^Txx^T\beta = 2xx^T\beta)\\ 
                                              &= 2\beta\int xx^T - 2\int\frac{\partial}{\partial\beta} Y\beta^Tx \quad \text{(Dot product is commutative)} \\
-                                             &= 2\beta\text{E}[XX^T] - 2\text{E}[YX] \quad (\frac{\partial}{\partial\beta}\beta^Tx = \frac{\partial}{\partial\beta}\sum\beta_ix_i = \sum x_i)
+                                             &= 2\beta\text{E}[XX^T] - 2\text{E}[YX] \quad (\frac{\partial}{\partial\beta}\beta^Tx = \frac{\partial}{\partial\beta_i}\sum\beta_ix_i = \sum x_i)
 \end{split}
 \end{equation}
 $$
@@ -631,8 +633,33 @@ $$
 \beta &= (\text{E}[XX^T])^{-1}\text{E[XY]}
 \end{split}
 \end{equation}
+(\#eq:linearoptimal)
 $$
 
+One can show that the least square solution approximates the theoretical $\beta$ value when $n$ is large:
+
+$$
+\hat{\beta} = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y} \rightarrow (\text{E}[XX^T])^{-1}\text{E[XY]} = \beta
+$$
+
+First, we observe that $\textbf{X}$ is a $N \times p$ matrix, where $N$ is the number of input. Since each row is a data sample, we can rewrite the matrix as:
+
+$$
+\textbf{X} =  \begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
+$$
+
+We can now rewrite $\textbf{X}^T\textbf{X}$ Eqn \@ref(eq:normsol) as:
+
+$$
+\begin{equation}
+\begin{split}
+\textbf{X}^T\textbf{X} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_n \end{bmatrix}\begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix} &= \sum_{i=1}^{N} x_ix^T_i \\
+&\approx \frac{1}{N}\text{E}[XX^T]
+\end{split}
+\end{equation}
+$$
+
+Next, we observe that $\textbf{y}$ is a $N$-vector of constants  
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
