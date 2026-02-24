@@ -1,8 +1,8 @@
-
 ```{r setup, include = FALSE}
 library(reticulate)
 library(bookdown)
 library(MASS)
+library(mvtnorm)
 library(ggplot2)
 library(class)
 
@@ -282,7 +282,7 @@ grid_x2 <- seq(x2_range[1] - 1, x2_range[2] + 1, length.out = grid_size)
 grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2) 
 ```
 
-We generated $10$ centers $m_k^{(1)} \sim N((1,0)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
+We generated $10$ centers $m_k^{(1)} \sim N((0,1)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
 
 ```{r linearmodel, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
 # Fit simple linear model
@@ -351,7 +351,7 @@ h(\textbf{x}) = \text{mode}(\{y'': (x', y') \in N_k\})
 $$
 , where we classify the neighborhood by the label of the highest occurrence.
 
-```{r knn1, warning=FALSE, fig.cap="The classes are fit by 15-nearest neighbor averaging. The predicted class is chosen by majority vote amongst lthe 15-nearest neighbor."}
+```{r knn1, warning=FALSE, fig.cap="The classes are fit by 15-nearest neighbor averaging. The predicted class is chosen by majority vote amongst the 15-nearest neighbors."}
 train_features <- test_mat[, c("x1", "x2")]
 test_data <- grid_data[, c("x1", "x2")]
 train_labels <- test_mat$Y
@@ -699,13 +699,14 @@ Thus, we have shown that the least square solution approaches the theoretical $\
 Suppose that the output is a categorical variable $G$, a different loss function is needed. Let $\hat{G}$ be an estimate of values in $\mathcal{G}$, the set of all possible classes. Our loss function can be represented as a $K \times K$ matrix $\textbf{L}$, where $K = \text{card}(\mathcal{G})$. $\textbf{L}$ will be zero on the diagonal and nonnegative elsewhere, where $L(k, \ell)$ is the loss for classifying an observation belonging to $\mathcal{G}_k$ as $\mathcal{G}_\ell$, i.e.
 
 $$
+\begin{equation}
 \textbf{L} = \begin{bmatrix}
               0 & L(\mathcal{G}_1, \mathcal{G}_2) & L(\mathcal{G}_1, \mathcal{G}_3) & \dots  & L(\mathcal{G}_1, \mathcal{G}_K) \\
               L(\mathcal{G}_2, \mathcal{G}_1) & 0 & L(\mathcal{G}_2, \mathcal{G}_3) & \dots  & L(\mathcal{G}_2, \mathcal{G}_K) \\
               \vdots & \vdots & \vdots & \ddots & \vdots \\
               L(\mathcal{G}_K, \mathcal{G}_1) & L(\mathcal{G}_K, \mathcal{G}_2) & L(\mathcal{G}_K, \mathcal{G}_3) & \dots  & 0
 \end{bmatrix}
-
+\end{equation}
 $$
 
 We use the zero-one function, where misclassifications are penalized by a single unit, such that:
@@ -718,14 +719,140 @@ L(k, \ell) =
 \end{cases}
 $$
 
-We have that the EPE is: 
+w.r.t. the joint distribution $\text{Pr}(G, X)$, we have that the $\text{EPE}$ is: 
+
 $$
 \text{EPE} = \text{E}[L(G, \hat{G}(X))]
 $$
 
-w.r.t. the joint distribution $\text{Pr}(G, X)$
+We condition and write $\text{EPE}$ as:
 
-We condition and write EPE 
+$$
+\begin{equation}
+\begin{split}
+\text{EPE} &= \text{E}_x[\text{E}_{G|X}[L(G,\hat{G(X)}|X)]] \\
+           &=\text{E}_x[\sum^{K}_{k=1}L(\mathcal{G}_k), \hat{G}(X)\text{P}(\mathcal{G}|X)]
+\end{split}
+\end{equation}
+$$
+
+Minimizing pointwise we get:
+
+$$
+\hat{G}(x)  =\operatorname*{argmin}_{g\in \mathcal{G}} \sum^{K}L(G=\mathcal{G}_k, \hat{G}(x) = g)\;\text{P}(\mathcal{G}_k|X=x)
+$$
+
+Simplifying the loss function:
+
+$$
+\begin{equation}
+L(G = \mathcal{G}_k, \hat{G}(x) = g) =
+\begin{cases}
+L(g,g) = 0, \text{when}\;\mathcal{G}_k =  g\\
+L(\mathcal{G}_k, g) = 1 , \text{when} \; \mathcal{G}_k \neq g
+\end{cases}
+\end{equation}
+$$
+
+Thus, the solution to our minimizer can be simplified into:
+
+$$
+\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} 1\cdot \text{P}(\mathcal{G}_k|X=x)
+$$
+ 
+As $\text{P}(\mathcal{G}_k|X=x)$ must sum to 1 and that the set $\mathcal{G}$ only consists of elements that is $g$ or not $g$, we have that:
+
+$$
+\begin{equation}
+\begin{split}
+\sum^K_{k=1}  \text{P}(\mathcal{G}_k|X=x) &= 1 \\
+\sum_{k:\mathcal{G}_k = g}  \text{P}(\mathcal{G}_k|X=x) &+ \sum_{k:\mathcal{G}_k \neq g}  \text{P}(\mathcal{G}_k|X=x) = 1 \\
+\text{P}(\mathcal{G}_k = g|X=x) &+ \sum_{k:\mathcal{G}_k \neq g}  \text{P}(\mathcal{G}_k|X=x) = 1 \\
+\sum_{k:\mathcal{G}_k \neq g}\text{P}(\mathcal{G}_k|X=x) &= 1 - \text{P}(\mathcal{G}_k = g|X=x)
+\end{split}
+\end{equation}
+$$
+
+Thus our minimizer is simplified into:
+
+$$
+\begin{equation}
+\begin{split}
+\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} \text{P}(\mathcal{G}_k|X=x) &= \operatorname*{argmin}_{g\in\mathcal{G}}(1-\text{P}(g|X=x)) \\ &= \operatorname*{argmax}_{g\in\mathcal{G}} \text{P}(g|X=x)
+\end{split}
+\end{equation}
+$$
+
+The solution is known as a $\textit{Bayes classifier}$, and implies that the best solution is found when we classify to the most probable class, using the conditional (discrete) distribution of $P(G|X)$. 
+
+```{r bayes, warning=FALSE, fig.cap="Optimal Bayes decision boundary"}
+compute_mixture_density <- function(x, centers, var){
+  n_components <- nrow(centers)
+  density <- 0
+  for (i in 1:n_components){
+    density <- density + dmvnorm(x, centers[i,], sigma=diag(var, 2))
+  }
+  
+  return(density / n_components)
+}
+
+grid_data$prob_blue <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d1, 1/5))
+grid_data$prob_orange <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d2, 1/5))
+
+grid_data$predicted_class <- ifelse(grid_data$prob_orange > grid_data$prob_blue, "Orange", "Blue")
+grid_data$pred_numeric <- as.numeric(grid_data$predicted_class == "Orange")
+
+# Plot
+ggplot() +
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+             size = 0.5, alpha = 0.5) +
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
+               breaks = 0.5, size = 0.8, color = "black") +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+             size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
+  labs(title="Bayes Optimal Classifier") + 
+  scale_color_manual(values = c("#4A90E2", "#F5A623")) +
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
+    panel.grid.minor = element_line(color = "grey95", linewidth = 0.3, linetype = "dotted"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  coord_fixed(ratio = 0.75)
+```
+$k$-nearest neighbor approximates the Bayesian solution - except that conditional probability at a point is relaxed to conditional probability within a neighborhood of a point.
+
+## Local Methods in High Dimensions
+
+### Neighborhood in n-dimensional volume
+
+Our intuition suggests that, given a sufficiently large training set, we could always approximate the theoretically optimal conditional expectation through $k$-nearest neighbor averaging — since we should be able to find a large neighborhood of observations close to $x$ and average over them. This intuition, however, breaks down in high dimensions.
+
+Consider the $p$-dimensional unit hypercube. Suppose we send out a hypercubial neighborhood around a target point to capture a fraction $r$ of the observations, and since this corresponds to a fraction $r$ of the unit volume, we have that the expected edge length will be $e_p(r) = r^{\frac{1}{p}}$. As the dimensions of the dataset increase, the expected edge length increase such that the neighborhood can no longer be considered "local". Reducing $r$ does not help, since the fewer observations we average, the higher the variance becomes.
+
+```{r volume, warning=FALSE, fig.cap="Curse of dimensionality illustrated. 80% of the range of each coordinate will be needed to capture 10% of the data in a 10-dimensional hypercube."}
+r <- seq(0, 0.65, length.out=500)
+dims <- c(1, 2, 3, 10)
+df <- do.call(rbind, lapply(dims, function(p) {
+  data.frame(r=r, distance=r^(1/p), p=factor(paste0('p=', p)))
+}))
+
+ggplot(df ,aes(x=r, y=distance,color=p)) + 
+  geom_line(linewidth = 0.8) + 
+  geom_vline(xintercept = c(0.1, 0.3), linetype = "dashed", color = "grey0", linewidth = 0.4) +
+  scale_x_continuous(limits=c(0, 0.65), breaks = seq(0, 0.6, by=0.2)) + 
+  scale_y_continuous(limits=c(0, 1), breaks = seq(0, 1, by=0.2)) + 
+  theme_minimal() + 
+  labs(
+    x = "Fraction of Volume",
+    y = "Distance"
+  )
+```
 
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
