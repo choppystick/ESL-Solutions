@@ -2,6 +2,8 @@
 .Rproj.user
 .Rhistory
 .RData
+.vscode
+.lintr
 .Ruserdata
 renv/
 _book/

@@ -7,15 +7,17 @@ library(ggplot2)
 library(class)
 
 set.seed(20021122)
-#use_python("C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe")
+use_python("C:\\Python314\\python.exe") # Set to your local python path
 
 color <- function(x, color) {
   if (knitr::is_latex_output()) {
     sprintf("\\textcolor{%s}{%s}", color, x)
   } else if (knitr::is_html_output()) {
     sprintf("<span style='color: %s;'>%s</span>", color,
-      x)
-  } else x
+            x)
+  } else {
+    x
+  }
 }
 ```
 
@@ -35,7 +37,7 @@ Two prediction methods are explored here: The linear model fit by least squares 
 
 ### Linear Models and Least Squares
 
-Given a vector of inputs $X^{T} = (X_1, X_2, ..., X_n)$, we predict the output $Y$ via the model: 
+Given a vector of inputs $X^{T} = (X_1, X_2, ..., X_n)$, we predict the output $Y$ via the model:
 
 $$
 \begin{equation}
@@ -44,7 +46,7 @@ $$
 \end{equation}
 $$
 
-where $\hat{\beta_0}$ is the intercept. Equivalently, we can write the linear model in vector form as an inner product: 
+where $\hat{\beta_0}$ is the intercept. Equivalently, we can write the linear model in vector form as an inner product:
 
 $$
 \begin{equation}
@@ -53,7 +55,7 @@ $$
 \end{equation}
 $$
 
-where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_n\end{pmatrix}\in\mathbb{R^{n+1}}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_n\end{pmatrix}\in\mathbb{R}^{n+1}$, such that $\hat{Y} = \sum_{i=0}^{n}\hat{\beta}_i x_i$. 
+where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_n\end{pmatrix}\in\mathbb{R^{n+1}}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_n\end{pmatrix}\in\mathbb{R}^{n+1}$, such that $\hat{Y} = \sum_{i=0}^{n}\hat{\beta}_i x_i$.
 
 If $\textbf{X}$ is instead a feature matrix with $p$ features and $m$ samples such that $\textbf{X}\in\mathbb{R^{m\times p}}$, where $p=n+1$, we can represent $\textbf{X}^{T}$ as a $p$-dimensional row vector $\begin{bmatrix} X_0 \; X_1 \; X_2 \; ... \; X_n \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R^m}$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(m)}]$, $X_0$ is a constant vector of $1$ and suppose that $\hat{Y}$ is a $k$-dimensional row vector instead of a scalar, then by equation \@ref(eq:leq), $\beta$ must necessarily be a $p \times K$ matrix of coefficients.
 
@@ -99,7 +101,7 @@ RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2
 \end{equation}
 $$
 
-$RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique. 
+$RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique.
 
 <details>
 <summary>Remark on the existence and non-uniqueness of a minimum for RSS</summary>
@@ -170,7 +172,7 @@ $$
 \begin{equation}
 \hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
 \end{equation}
-$$ 
+$$
 
 , and $\hat{\beta}$ is a unique solution.
 
@@ -219,17 +221,17 @@ $$
 \hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
 \end{equation}
 (\#eq:normsol)
-$$ 
+$$
 
-and the fitted value at the $i$th input $x_i$ is $\hat{y}_i = \hat{y}_i(x_i) = x^{T}_i\hat{\beta}$. At an arbitrary input $x_0$, the prediction is $\hat{y}_i(x_0) = x^{T}_0\hat{\beta}$. The entire fitted surface is characterized by the $p$ parameters $\hat{\beta}$.[^5] It seems that we may not need a very large data set to fit such a model. 
+and the fitted value at the $i$th input $x_i$ is $\hat{y}_i = \hat{y}_i(x_i) = x^{T}_i\hat{\beta}$. At an arbitrary input $x_0$, the prediction is $\hat{y}_i(x_0) = x^{T}_0\hat{\beta}$. The entire fitted surface is characterized by the $p$ parameters $\hat{\beta}$.[^5] It seems that we may not need a very large data set to fit such a model.
 
-### Linear Model Simulation 
+### Linear Model Simulation
 
 We simulate a data set with an output class variable $G$ with the values `r color("BLUE", "blue")` or `r color("ORANGE", "orange")`. There are 100 points in each of the two classes. We fit a linear regression model to these values, with the response $Y$ coded as $0$ for `r color("BLUE", "blue")` and $1$ for `r color("ORANGE", "orange")`. The fitted values $\hat{Y}$ are converted to a fitted class variable $\hat{G}$ according to the rule
 
 $$
 \begin{equation}
-\hat{G} = 
+\hat{G} =
 \begin{cases}
 \text{ORANGE} & \hat{Y} > 0.5\\
 \text{BLUE} & \hat{Y} \leq 0.5
@@ -240,46 +242,46 @@ $$
 
 There are multiple scenarios where our constructed data can come from, but we outline here specifically two types:
 
-$\textbf{Scenario 1}$: The training data in each class were generated from bivariate Gaussian distributions with uncorrelated components and different means. 
+$\textbf{Scenario 1}$: The training data in each class were generated from bivariate Gaussian distributions with uncorrelated components and different means.
 
 In other words, our data is generated from each class $j$ with fixed mean $\mu^{(j)}$ and covariance $\Sigma^{(j)}$, and each observation $i$ is distributed with $X_i|Y=j \sim N(\mu^{(j)}, \Sigma^{(j)})$. Therefore, $P(X|Y=j) = \phi(x;\mu^{(j)},\Sigma^{(j)})$.
 
-$\textbf{Scenario 2}$: The training data in each class came from a mixture of 10 low-variance Gaussian distributions, with individual means themselves distributed as Gaussian. 
+$\textbf{Scenario 2}$: The training data in each class came from a mixture of 10 low-variance Gaussian distributions, with individual means themselves distributed as Gaussian.
 
 Essentially, we have $10$ random cluster locations $\mu_k^{(j)}$ per class, each distributed around a class specific mean $\mu^{(j)}$ with covariance $\Sigma^{(j)}$. Then for each cluster location, we generate an observation $X_i$ where $X_i|\text{Location}=k,Y=j \sim N(\mu_k^{(j)}, \Sigma)$ where $\Sigma$ is the variance of the mixture distribution. Therefore, $P(X|Y=j) = \sum_{k=1}^{10}\pi_k\phi(x;\mu_k^{(j)},\Sigma)$, where $\pi_k$ is the weight of the cluster (How likely/prominent this cluster is).
 
-We first demonstrate the method of how our simulated data set is generated: 
+We first demonstrate the method of how our simulated data set is generated:
 
 ```{r, warning=FALSE}
 # Generate data set of n=20 from two bivariate normal distribution
-d1 <- mvrnorm(n=10, c(1,0), diag(2)) #BLUE
-d2 <- mvrnorm(n=10, c(0,1), diag(2)) #ORANGE
+d1 <- mvrnorm(n = 10, c(1, 0), diag(2)) #BLUE
+d2 <- mvrnorm(n = 10, c(0, 1), diag(2)) #ORANGE
 
-gen_obs <- function(mean, nobs){
+gen_obs <- function(mean, nobs) {
   obs <- c()
   for (i in 1:nobs){
     row_mean <- mean[sample(1:10, 1), ]
-    newobs <- mvrnorm(n=1, row_mean, diag(1/5, 2, 2))
+    newobs <- mvrnorm(n = 1, row_mean, diag(1 / 5, 2, 2))
     obs <- rbind(obs, unname(newobs))
   }
-  
+
   colnames(obs) <- c("x1", "x2")
-  return(obs)
+  obs
 }
 
 d1_obs <- gen_obs(d1, 100)
 d2_obs <- gen_obs(d2, 100)
-Y <- rep(c(0,1), each=100) # 0=BLUE, 1=ORANGE
+Y <- rep(c(0, 1), each = 100) # 0=BLUE, 1=ORANGE
 test_mat <- as.data.frame(cbind(Y, rbind(d1_obs, d2_obs)))
 test_mat$Y <- factor(test_mat$Y, labels = c("Blue", "Orange"))
 
-# Generate points grid 
+# Generate points grid
 grid_size <- 100
 x1_range <- range(test_mat$x1)
 x2_range <- range(test_mat$x2)
 grid_x1 <- seq(x1_range[1] - 1, x1_range[2] + 1, length.out = grid_size)
 grid_x2 <- seq(x2_range[1] - 1, x2_range[2] + 1, length.out = grid_size)
-grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2) 
+grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2)
 ```
 
 We generated $10$ centers $m_k^{(1)} \sim N((0,1)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
@@ -293,13 +295,13 @@ grid_predictions <- predict(boundary_model, grid_data)
 grid_data$predicted_class <- ifelse(grid_predictions > 0.5, "Orange", "Blue")
 
 # Create the plot with background
-p <- ggplot() + 
-  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+p <- ggplot() +
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class),
              size = 0.5, alpha = 0.5) +
-  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y),
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
-  labs(title="Linear Regression") +
+  labs(title = "Linear Regression") +
   theme_minimal() +
   theme(
     panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
@@ -309,7 +311,7 @@ p <- ggplot() +
     axis.title = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
-    plot.title = element_text(hjust=0.5)
+    plot.title = element_text(hjust = 0.5)
   ) +
   coord_fixed(ratio = 0.75)
 
@@ -317,7 +319,7 @@ p <- ggplot() +
 boundary_slope <- -coef(boundary_model)[2] / coef(boundary_model)[3]
 boundary_intercept <- (0.5 - coef(boundary_model)[1]) / coef(boundary_model)[3]
 
-p + geom_abline(slope = boundary_slope, intercept = boundary_intercept, 
+p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
                 color = "black", linewidth = 1)
 ```
 
@@ -356,21 +358,21 @@ train_features <- test_mat[, c("x1", "x2")]
 test_data <- grid_data[, c("x1", "x2")]
 train_labels <- test_mat$Y
 
-# knn implementation 
-knn_model <- knn(train = train_features, test = test_data, cl = train_labels, k=15)
+# knn implementation
+knn_model <- knn(train = train_features, test = test_data, cl = train_labels, k = 15)
 grid_data$predicted_class <- knn_model
 grid_data$pred_numeric <- as.numeric(knn_model == "Orange")
 
 # Create the plot with background
 ggplot() +
-  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class),
              size = 0.5, alpha = 0.5) +
-  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
-             breaks = 0.5, size = 0.8, color = "black") +
-  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric),
+               breaks = 0.5, size = 0.8, color = "black") +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y),
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
-  labs(title="15-Nearest Neighbor Classifier") + 
+  labs(title = "15-Nearest Neighbor Classifier") +
   theme_minimal() +
   theme(
     panel.grid.major = element_line(color = "grey90", linewidth = 0.5, linetype = "dotted"),
@@ -388,20 +390,20 @@ ggplot() +
 In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linearmodel), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} \gt 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
 
 ```{r knn2, echo=FALSE, fig.cap="Classes are coded as a binary variable and then predicted by 1-nearest neighbor classification."}
-# knn implementation 
-knn_model <- knn(train = train_features, test = grid_data[, c("x1", "x2")], cl = train_labels, k=1)
+# knn implementation
+knn_model <- knn(train = train_features, test = grid_data[, c("x1", "x2")], cl = train_labels, k = 1)
 grid_data$predicted_class <- knn_model
 grid_data$pred_numeric <- as.numeric(knn_model == "Orange")
 
 # Create the plot with background
 ggplot() +
-  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class),
              size = 0.5, alpha = 0.5) +
-  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
-             breaks = 0.5, size = 0.8, color = "black") +
-  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric),
+               breaks = 0.5, size = 0.8, color = "black") +
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y),
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
-  labs(title="1-Nearest Neighbor Classifier") + 
+  labs(title = "1-Nearest Neighbor Classifier") +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
   theme_minimal() +
   theme(
@@ -417,7 +419,7 @@ ggplot() +
   coord_fixed(ratio = 0.75)
 ```
 
-Figure \@ref(fig:knn2) instead shows the result for 1-nearest neighbor classification: $\hat{Y}$ is assigned the value $y_{\ell}$ of the closest point $x_{\ell}$ to $x$ in the training data. This corresponds to a Voronoi tessellation of the training data. Each point $x_i$ has an associated Voroni cell bounding the region where it is the only closest neighbor to any test point, such that, for all points $x$ in the cell, $\hat{G}(x) = g_i$. Compared to Figure \@ref(fig:knn1), the decision boundary is even more irregular. The training error is approximately an increasing function of $k$, and is always $0$ for $k=1$. As a consequence, we cannot use sum-of-squared errors on the training set as a criterion for picking $k$, as this would always result in picking $k=1$. 
+Figure \@ref(fig:knn2) instead shows the result for 1-nearest neighbor classification: $\hat{Y}$ is assigned the value $y_{\ell}$ of the closest point $x_{\ell}$ to $x$ in the training data. This corresponds to a Voronoi tessellation of the training data. Each point $x_i$ has an associated Voroni cell bounding the region where it is the only closest neighbor to any test point, such that, for all points $x$ in the cell, $\hat{G}(x) = g_i$. Compared to Figure \@ref(fig:knn1), the decision boundary is even more irregular. The training error is approximately an increasing function of $k$, and is always $0$ for $k=1$. As a consequence, we cannot use sum-of-squared errors on the training set as a criterion for picking $k$, as this would always result in picking $k=1$.
 
 It appears that $k$-nearest neighbor fits have a single parameter, which is the number of neighbors $k$, compared to the $p$ parameters in least-squares fit. However, the effective number of parameters of $k$-nn is $N/k$ and is generally bigger than $p$, which decreases with increasing $k$. Consider the hypothetical case where the neighborhoods are non-overlapping, given $N$ training points and $k$ points per neighborhood, we will have $N/k$ neighborhoods. As a majority vote will be casted for each neighborhood, this effectively constitutes a parameter for each neighborhood.
 
@@ -425,14 +427,14 @@ It appears that $k$-nearest neighbor fits have a single parameter, which is the 
 # Training set
 train_obs1 <- gen_obs(d1, 5000)
 train_obs2 <- gen_obs(d2, 5000)
-Y <- rep(c(0,1), each = 5000) # 0=BLUE, 1=ORANGE
+Y <- rep(c(0, 1), each = 5000) # 0=BLUE, 1=ORANGE
 train_mat <- as.data.frame(cbind(Y, rbind(train_obs1, train_obs2)))
 train_mat$Y <- factor(train_mat$Y, labels = c("Blue", "Orange"))
 
 # Test set
 test_obs1 <- gen_obs(d1, 100)
 test_obs2 <- gen_obs(d2, 100)
-Y <- rep(c(0,1), each = 100)
+Y <- rep(c(0, 1), each = 100)
 test_mat <- as.data.frame(cbind(Y, rbind(test_obs1, test_obs2)))
 test_mat$Y <- factor(test_mat$Y, labels = c("Blue", "Orange"))
 
@@ -443,21 +445,21 @@ results <- data.frame(k = numeric(), test_error = numeric(), train_error = numer
 for (kval in k){
   test_pred <- knn(train = train_mat[, c("x1", "x2")], test = test_mat[, c("x1", "x2")], cl = train_mat$Y, k = kval)
   train_pred <- knn(train = train_mat[, c("x1", "x2")], test = train_mat[, c("x1", "x2")], cl = train_mat$Y, k = kval)
-  
+
   test_error <- mean(test_pred != test_mat$Y)
   train_error <- mean(train_pred != train_mat$Y)
-  
-  results <- rbind(results, data.frame(k=kval, test_error=test_error, train_error=train_error))
+
+  results <- rbind(results, data.frame(k = kval, test_error = test_error, train_error = train_error))
 }
 
 results$df <- 200 / results$k
 
-# Linear 
+# Linear
 lm_data <- data.frame(Y = as.numeric(train_mat$Y == "Orange"), x1 = train_mat$x1, x2 = train_mat$x2)
-lm_train <- lm(Y~x1+x2, data=lm_data)
+lm_train <- lm(Y ~ x1 + x2, data = lm_data)
 
-test_pred <- ifelse(predict(lm_train, test_mat[,c("x1", "x2")]) > 0.5, "Orange", "Blue")
-train_pred <- ifelse(predict(lm_train, train_mat[,c("x1", "x2")]) > 0.5, "Orange", "Blue")
+test_pred <- ifelse(predict(lm_train, test_mat[, c("x1", "x2")]) > 0.5, "Orange", "Blue")
+train_pred <- ifelse(predict(lm_train, train_mat[, c("x1", "x2")]) > 0.5, "Orange", "Blue")
 
 lm_test_error <- mean(test_pred != test_mat$Y)
 lm_train_error <- mean(train_pred != train_mat$Y)
@@ -468,7 +470,7 @@ ggplot(results, aes(x = df)) +
   geom_point(aes(y = train_error, color = "Train"), size = 2) +
   geom_line(aes(y = test_error, color = "Test"), linewidth = 0.8, linetype = "solid") +
   geom_point(aes(y = test_error, color = "Test"), size = 2) +
- # geom_hline(aes(yintercept = bayes_error, color = "Bayes"), linewidth = 1) +
+  # geom_hline(aes(yintercept = bayes_error, color = "Bayes"), linewidth = 1) +
   geom_point(aes(x = 3, y = lm_train_error, color = "Train"), shape = 15, size = 2.5) +
   geom_point(aes(x = 3, y = lm_test_error, color = "Test"), shape = 15, size = 2.5) +
   annotate("text", x = 3.5, y = lm_train_error + 0.01, label = "Linear", hjust = 0, size = 3.5) +
@@ -477,7 +479,7 @@ ggplot(results, aes(x = df)) +
   scale_x_log10(
     name = "Degrees of Freedom = N/k",
     breaks = c(2, 3, 5, 8, 12, 18, 29, 67, 200),
-    sec.axis = sec_axis(~ 200/., name = "k = Number of Nearest Neighbors",
+    sec.axis = sec_axis(~ 200 / ., name = "k = Number of Nearest Neighbors",
                         breaks = c(1, 3, 5, 7, 11, 21, 31, 45, 69, 101, 151))
   ) +
   scale_y_continuous(name = "Test Error", limits = c(0, 0.35), breaks = seq(0.05, 0.3, 0.05)) +
@@ -498,7 +500,7 @@ ggplot(results, aes(x = df)) +
 
 ```
 
-## Statistical Decision Theory 
+## Statistical Decision Theory
 
 We now develop a framework to develop and evaluate models that were previously discussed. Let $X \in \mathbb{R}^p$ denote a real valued input vector, and $Y \in \mathbb{R}$ a real-valued random output variable, with joint distribution $Pr(X,Y)$. We seek a function $f(X)$ for predicting $Y$ given input $X$. As we desire models that are accurate, we need a loss function $L(Y, f(X))$ that penalizes errors in prediction. The most common loss function is the squared-error loss: $L(Y, f(X)) = (Y - f(X))^2$. This gives us a criterion to select $f$
 
@@ -506,7 +508,7 @@ We now develop a framework to develop and evaluate models that were previously d
 
 Given the squared error loss function, we now define the expected prediction error criterion:
 
-$$ 
+$$
 \begin{equation}
 \begin{split}
 \text{EPE}(f) &= \text{E}[(Y-f(X))^2] \\
@@ -521,8 +523,8 @@ $$
 \begin{equation}
 \begin{split}
 \text{EPE}(f) &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\text{Pr}(X=x, Y=y)\;dx\;dy \\
-              &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;\text{Pr}(X=x)\;dx\;dy \\ 
-              &= \int_{x\in X}\int_{y\in Y} ((y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;dy)\ \;\text{Pr}(X=x)\;dx \\ 
+              &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;\text{Pr}(X=x)\;dx\;dy \\
+              &= \int_{x\in X}\int_{y\in Y} ((y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;dy)\ \;\text{Pr}(X=x)\;dx \\
               &= \text{E}_X\text{E}_{Y|X}[(Y - f(X))^2 | X]
 \end{split}
 \end{equation}
@@ -600,7 +602,7 @@ $$
 \end{equation}
 $$
 
-We now differentiate in terms of $\beta$ (See the appendix for this chapter for the justification of the interchangeability of the derivative and integral sign), 
+We now differentiate in terms of $\beta$ (See the appendix for this chapter for the justification of the interchangeability of the derivative and integral sign),
 
 $$
 \begin{equation}
@@ -617,7 +619,7 @@ $$
 \begin{equation}
 \begin{split}
 \frac{\partial\text{EPE}(f)}{\partial \beta} &= \int\frac{\partial}{\partial\beta}Y^2 + \int\frac{\partial}{\partial\beta}\beta^Txx^T\beta - \int\frac{\partial}{\partial\beta}(2x^TY\beta) \\
-                                             &= 0 + \int2xx^T\beta - \int\frac{\partial}{\partial\beta}2Yx^T\beta \quad (\text{Using the identity:}\;\frac{\partial}{\partial\beta}\beta^Txx^T\beta = 2xx^T\beta)\\ 
+                                             &= 0 + \int2xx^T\beta - \int\frac{\partial}{\partial\beta}2Yx^T\beta \quad (\text{Using the identity:}\;\frac{\partial}{\partial\beta}\beta^Txx^T\beta = 2xx^T\beta)\\
                                              &= 2\beta\int xx^T - 2\int\frac{\partial}{\partial\beta} Y\beta^Tx \quad \text{(Dot product is commutative)} \\
                                              &= 2\beta\text{E}[XX^T] - 2\text{E}[YX] \quad (\frac{\partial}{\partial\beta}\beta^Tx = \frac{\partial}{\partial\beta_i}\sum\beta_ix_i = \sum x_i)
 \end{split}
@@ -656,7 +658,7 @@ We can now rewrite $\textbf{X}^T\textbf{X}$ Eqn \@ref(eq:normsol) as:
 $$
 \begin{equation}
 \begin{split}
-\textbf{X}^T\textbf{X} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_n \end{bmatrix}\begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix} 
+\textbf{X}^T\textbf{X} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_n \end{bmatrix}\begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
                       &= \sum_{i=1}^{N} x_ix^T_i \\
                       &\approx N\text{E}[XX^T]
 \end{split}
@@ -668,19 +670,19 @@ Next, we observe that $\textbf{y}$ is a $N$-vector of constants:
 $$
 \begin{equation}
 \begin{split}
-\textbf{X}^T\textbf{y} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_N \end{bmatrix}\begin{bmatrix}y_1\\y_2\\\vdots\\y_N\end{bmatrix} 
+\textbf{X}^T\textbf{y} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_N \end{bmatrix}\begin{bmatrix}y_1\\y_2\\\vdots\\y_N\end{bmatrix}
                        &= \sum_{i=1}^{N} x_iy_i \\
                        &\approx N\text{E}[XY]
 \end{split}
 \end{equation}
 $$
 
-Hence, 
+Hence,
 
 $$
 \begin{equation}
 \begin{split}
-\hat{\beta} &= (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y} \\ 
+\hat{\beta} &= (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y} \\
            &\approx (N\text{E}[XX^T])^{-1}N \text{E}[XY] \\
            &\xrightarrow{N\;\rightarrow\;\infty} \frac{1}{N}(\text{E}[XX^T])^{-1}N\text{E}[XY] \\
            &= \text{E}[XX^T])^{-1}\text{E}[XY] \\
@@ -688,7 +690,7 @@ $$
 \end{split}
 \end{equation}
 $$
-Thus, we have shown that the least square solution approaches the theoretical $\beta$ as $n$ gets larger. 
+Thus, we have shown that the least square solution approaches the theoretical $\beta$ as $n$ gets larger.
 :::
 </details>
 
@@ -712,14 +714,14 @@ $$
 We use the zero-one function, where misclassifications are penalized by a single unit, such that:
 
 $$
-L(k, \ell) = 
+L(k, \ell) =
 \begin{cases}
 0, \text{if} \; k=\ell \\
 1, \text{if} \; k \neq \ell
 \end{cases}
 $$
 
-w.r.t. the joint distribution $\text{Pr}(G, X)$, we have that the $\text{EPE}$ is: 
+w.r.t. the joint distribution $\text{Pr}(G, X)$, we have that the $\text{EPE}$ is:
 
 $$
 \text{EPE} = \text{E}[L(G, \hat{G}(X))]
@@ -759,7 +761,7 @@ Thus, the solution to our minimizer can be simplified into:
 $$
 \hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} 1\cdot \text{P}(\mathcal{G}_k|X=x)
 $$
- 
+
 As $\text{P}(\mathcal{G}_k|X=x)$ must sum to 1 and that the set $\mathcal{G}$ only consists of elements that is $g$ or not $g$, we have that:
 
 $$
@@ -783,34 +785,34 @@ $$
 \end{equation}
 $$
 
-The solution is known as a $\textit{Bayes classifier}$, and implies that the best solution is found when we classify to the most probable class, using the conditional (discrete) distribution of $P(G|X)$. 
+The solution is known as a $\textit{Bayes classifier}$, and implies that the best solution is found when we classify to the most probable class, using the conditional (discrete) distribution of $P(G|X)$.
 
 ```{r bayes, warning=FALSE, fig.cap="Optimal Bayes decision boundary"}
-compute_mixture_density <- function(x, centers, var){
+compute_mixture_density <- function(x, centers, var) {
   n_components <- nrow(centers)
   density <- 0
   for (i in 1:n_components){
-    density <- density + dmvnorm(x, centers[i,], sigma=diag(var, 2))
+    density <- density + dmvnorm(x, centers[i, ], sigma = diag(var, 2))
   }
-  
-  return(density / n_components)
+
+  density / n_components
 }
 
-grid_data$prob_blue <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d1, 1/5))
-grid_data$prob_orange <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d2, 1/5))
+grid_data$prob_blue <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d1, 1 / 5))
+grid_data$prob_orange <- apply(grid_data[, c("x1", "x2")], 1, function(x) compute_mixture_density(x, d2, 1 / 5))
 
 grid_data$predicted_class <- ifelse(grid_data$prob_orange > grid_data$prob_blue, "Orange", "Blue")
 grid_data$pred_numeric <- as.numeric(grid_data$predicted_class == "Orange")
 
 # Plot
 ggplot() +
-  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class), 
+  geom_point(data = grid_data, aes(x = x1, y = x2, color = predicted_class),
              size = 0.5, alpha = 0.5) +
-  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric), 
+  geom_contour(data = grid_data, aes(x = x1, y = x2, z = pred_numeric),
                breaks = 0.5, size = 0.8, color = "black") +
-  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y), 
+  geom_point(data = test_mat, aes(x = x1, y = x2, color = Y),
              size = 2.5, alpha = 0.8, stroke = 1, shape = 1) +
-  labs(title="Bayes Optimal Classifier") + 
+  labs(title = "Bayes Optimal Classifier") +
   scale_color_manual(values = c("#4A90E2", "#F5A623")) +
   theme_minimal() +
   theme(
@@ -836,18 +838,18 @@ Our intuition suggests that, given a sufficiently large training set, we could a
 Consider the $p$-dimensional unit hypercube. Suppose we send out a hypercubial neighborhood around a target point to capture a fraction $r$ of the observations, and since this corresponds to a fraction $r$ of the unit volume, we have that the expected edge length will be $e_p(r) = r^{\frac{1}{p}}$. As the dimensions of the dataset increase, the expected edge length increase such that the neighborhood can no longer be considered "local". Reducing $r$ does not help, since the fewer observations we average, the higher the variance becomes.
 
 ```{r volume, warning=FALSE, fig.cap="Curse of dimensionality illustrated. 80% of the range of each coordinate will be needed to capture 10% of the data in a 10-dimensional hypercube."}
-r <- seq(0, 0.65, length.out=500)
+r <- seq(0, 0.65, length.out = 500)
 dims <- c(1, 2, 3, 10)
 df <- do.call(rbind, lapply(dims, function(p) {
-  data.frame(r=r, distance=r^(1/p), p=factor(paste0('p=', p)))
+  data.frame(r = r, distance = r^(1 / p), p = factor(paste0("p=", p)))
 }))
 
-ggplot(df ,aes(x=r, y=distance,color=p)) + 
-  geom_line(linewidth = 0.8) + 
+ggplot(df, aes(x = r, y = distance, color = p)) +
+  geom_line(linewidth = 0.8) +
   geom_vline(xintercept = c(0.1, 0.3), linetype = "dashed", color = "grey0", linewidth = 0.4) +
-  scale_x_continuous(limits=c(0, 0.65), breaks = seq(0, 0.6, by=0.2)) + 
-  scale_y_continuous(limits=c(0, 1), breaks = seq(0, 1, by=0.2)) + 
-  theme_minimal() + 
+  scale_x_continuous(limits = c(0, 0.65), breaks = seq(0, 0.6, by = 0.2)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2)) +
+  theme_minimal() +
   labs(
     x = "Fraction of Volume",
     y = "Distance"
@@ -856,11 +858,11 @@ ggplot(df ,aes(x=r, y=distance,color=p)) +
 
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
-[^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat) 
+[^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat)
 [^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
-[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements 
+[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements
 [^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where all possible values reside. On the other hand, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
-[^6]: Generally, the distance metric is specified by the Minkowski distance  
-    $d(\textbf{x}, \textbf{z}) = (\sum_{r=1}^N |x_i - z_i|^p)^{\frac{1}{p}}$  
+[^6]: Generally, the distance metric is specified by the Minkowski distance
+    $d(\textbf{x}, \textbf{z}) = (\sum_{r=1}^N |x_i - z_i|^p)^{\frac{1}{p}}$
     Special cases include: $p = 1$ (Manhattan Distance), <br> $p = 2$ (Euclidean Distance), <br> $p \rightarrow \infty$ (Chebyshev Distance).
 [^7]: Every point in $\mathcal{T}$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
