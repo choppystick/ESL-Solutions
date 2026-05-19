@@ -5,3 +5,6 @@ pre {
 pre[class] {
   max-height: 300px;
 }
+p.caption {
+  font-size: 0.8em;
+}
