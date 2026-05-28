@@ -6,6 +6,7 @@ library(mvtnorm)
 library(ggplot2)
 library(class)
 
+# Use bookdown::serve_book()
 set.seed(20021122)
 use_python("C:\\Python314\\python.exe") # Set to your local python path
 
@@ -343,7 +344,7 @@ We can further define $k$-NN more formally as:
 Given test point $\textbf{x}$, we define the set of the $k$ nearest neighbors of the neighborhood $N_k$. $N_k$ is formally defined as $N_k \subseteq \mathcal{T}$ s.t. $|N_k| = k$. Furthermore, given $\forall(\textbf{x}', y') \in \mathcal{T}\backslash N_k$,[^7]
 
 $$
-d(\textbf{x}, \textbf{x}') \geq \operatorname*{argmax}_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'')
+d(\textbf{x}, \textbf{x}') \geq \operatorname*{argmax}_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'') 
 $$
 
 We can now define a classifier $h$ as a function returning the most common label in $N_k$:
@@ -530,7 +531,8 @@ $$
 \end{equation}
 $$
 
-When analyzing the expectation in detail, we can notice that \text{EPE} is an integral of the form:
+
+We can notice that $\text{EPE}$ is an integral of the form:
 
 $$
 \begin{equation}
@@ -540,9 +542,50 @@ $$
 
 Given that the integral is always non-negative and $f(x)$ can be chosen independently for each $x$, minimizing each integrand is equivalent to minimize the integral. Therefore, we solve the simpler problem instead: At each point $x$, we seek to find a constant $c$ that minimize $E_{Y|X}[(Y-c)^2|X=x]$. In other words, it suffices to minimize $\text{EPE}$ pointwise:
 
+<details>
+<summary>Remark on justification of minimization.</summary>
+::: {.remark}
+Given a measure space $(S, \mathcal{F}, \mu)$, let $\mathcal{F}$ be a space of measurable functions $f: S \rightarrow \mathcal{X}$ and let $F: \mathcal{F} \rightarrow \mathbb{R}$ be a functional of the form:
 $$
 \begin{equation}
-f(x) = \operatorname*{argmin}_c \text{E}_{Y|X}[(Y-c)^2|X=x]
+F(f) = \int_{S} g(f(s),s) \, \mu(ds)
+\end{equation}
+$$
+for some measurable $g: \mathcal{X} \times S \rightarrow \mathbb{R}$ and positive measure $\mu$ on $S$
+
+A global minimization problem is 
+$$
+\begin{equation}
+f^* = \operatorname*{argmin}_{f\in\mathcal{F}} F(f)
+\end{equation}
+$$
+
+The functional $F$ admits pointwise minimization if the global problem reduces to the family of scalar problems
+$$
+\begin{equation}
+f^*(s) = \operatorname*{argmin}_{c\in\mathcal{X}} g(c,s)
+\end{equation}
+$$
+
+For any $f$, $g(f(s), s) \geq g(f^*(s), s)$ by definition of $f^*$. Since $\mu$ is a positive measure, integration preserves inequality:
+
+$$
+\begin{equation}
+F(f) = \int_{S} g(f(s),s) \, \mu(ds) \geq \int_{S} g(f^*(s),s) \, \mu(ds) = F(f^*)
+\end{equation}
+$$
+
+Therefore, $f^*$ is a global minimizer for all $f \in \mathcal{F}$.  
+
+This reduction is only valid if:
+
+1. The integrand at $s$ depends on $f$ only through $f(s)$
+2. $\mu$ is a positive measure, to guarantee the preservation of inequalities
+3. The pointwise minimizer $\operatorname*{argmin}_{c} g(c,s)$ is itself measurable, hence $f^* \in \mathcal{F}$
+
+$$
+\begin{equation}
+f(x) = \operatorname*{argmin}_c \text{E}_{Y|X}[(Y-c)^2\mid X=x]
 \end{equation}
 $$
 
@@ -551,14 +594,14 @@ To solve this optimization problem, we first expand the inner term:
 $$
 \begin{equation}
 \begin{split}
-f(x) &= \operatorname*{argmin}_c \text{E}_{Y|X}[Y^2 + c^2 - 2Yc|X=x] \\
-     &= \operatorname*{argmin}_c (\text{E}_{Y|X}[Y^2|X=x] + \text{E}_{Y|X}[c^2|X=x] -\text{E}_{Y|X}[2Yc|X=x]) \\
-     &= \operatorname*{argmin}_c (\text{E}_{Y|X}[Y^2|X=x]) + c^2 - 2c\text{E}_{Y|X}[Y|X=x])
+f(x) &= \operatorname*{argmin}_c \text{E}_{Y|X}[Y^2 - 2Yc + c^2\mid X=x] \\
+     &= \operatorname*{argmin}_c \bigl(\text{E}_{Y|X}[Y^2\mid X=x] - 2c\text{E}_{Y|X}[Y\mid X=x] + c^2\bigr) \\
+     &= \operatorname*{argmin}_c \bigl(c^2 - 2c\text{E}_{Y|X}[Y\mid X=x] + \text{E}_{Y|X}[Y^2\mid X=x]\bigr)
 \end{split}
 \end{equation}
 $$
 
-We take the derivative of the RHS w.r.t. $f(x) = c$ and set it to $0$:
+We take the derivative of the RHS with respect to $c$ and set it to $0$:
 
 $$
 \begin{equation}
@@ -579,7 +622,27 @@ $$
 
 ### Optimal Function of Nearest-Neighbor Method
 
+For a fixed query point $x$, the k-NN estimator replaces the population objective $\text{E}[(Y-c)^2 \mid X = x]$ with its empirical analog over the neighborhood $N_k(x)$:
 
+$$
+\begin{equation}
+\hat{c} = \text{argmin}_c \sum_{x_i \in N_k(x)} (y_i - c)^2
+\end{equation}
+$$
+
+Differentiating with respect to $c$ and setting to zero,
+
+$$
+\begin{equation}
+\begin{split}
+\frac{d}{dc}\sum_{x_i \in N_k(x)}(y_i - c)^2 &= -2\sum_{x_i \in N_k(x)}(y_i - c) = 0 \\
+\sum_{x_i \in N_k(x)} y_i &= \sum_{x_i \in N_k(x)} c \\
+\hat{c} &= \frac{1}{k}\sum_{x_i \in N_k(x)} y_i = \text{Ave}(y_i \mid x_i \in N_k(x))
+\end{split}
+\end{equation}
+$$
+
+The population conditional expectation $\text{E}(Y \mid X = x)$ is approximated in two steps: the sample average estimates $\text{E}(Y \mid X \in N_k(x))$ by the law of large numbers as $k \to \infty$, and $\text{E}(Y \mid X \in N_k(x)) \to \text{E}(Y \mid X = x)$ as the neighborhood shrinks when $k/N \to 0$.
 
 ### Optimal Function of Linear Model
 
@@ -732,8 +795,8 @@ We condition and write $\text{EPE}$ as:
 $$
 \begin{equation}
 \begin{split}
-\text{EPE} &= \text{E}_x[\text{E}_{G|X}[L(G,\hat{G(X)}|X)]] \\
-           &=\text{E}_x[\sum^{K}_{k=1}L(\mathcal{G}_k), \hat{G}(X)\text{P}(\mathcal{G}|X)]
+\text{EPE} &= \text{E}_x[\text{E}_{G|X}[L(G,\hat{G}(X)|X)]] \\
+           &=\text{E}_x[\sum^{K}_{k=1}L(\mathcal{G}_k, \hat{G}(X)\text{P}(\mathcal{G}|X)]
 \end{split}
 \end{equation}
 $$
