@@ -1,3 +1,5 @@
+# Overview of Supervised Learning
+
 ```{r setup, include = FALSE}
 library(reticulate)
 library(bookdown)
@@ -21,8 +23,6 @@ color <- function(x, color) {
   }
 }
 ```
-
-# Overview of Supervised Learning
 
 ## Variable Types and Terminologies
 
@@ -327,6 +327,7 @@ p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
 In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta}\gt0.5\}$, and the two predicted classes are separated by the linear $\textit{decision boundary}\;\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
 
 ### Nearest-Neighbor Methods
+
 The nearest-neighborhood methods use observations in the training set $\mathcal{T}: \{(x_i, y_i),\;i=1,2,...,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor fit for $\hat{Y}$ as
 
 $$
@@ -531,8 +532,7 @@ $$
 \end{equation}
 $$
 
-
-We can notice that $\text{EPE}$ is an integral of the form:
+We note that $\text{EPE}$ is an integral of the form:
 
 $$
 \begin{equation}
@@ -540,7 +540,7 @@ EPE(f) = \int_{x\in X} E[(Y-f(x))^2|x]\; dx
 \end{equation}
 $$
 
-Given that the integral is always non-negative and $f(x)$ can be chosen independently for each $x$, minimizing each integrand is equivalent to minimize the integral. Therefore, we solve the simpler problem instead: At each point $x$, we seek to find a constant $c$ that minimize $E_{Y|X}[(Y-c)^2|X=x]$. In other words, it suffices to minimize $\text{EPE}$ pointwise:
+Given that the integral is always non-negative and $f(x)$ can be chosen independently for each $x$, minimizing each integrand is equivalent to minimize the integral. Therefore, we solve the simpler problem instead: At each point $x$, we seek to find a constant $c^*$ that minimize $E_{Y|X}[(Y-c)^2|X=x]$. In other words, it suffices to minimize $\text{EPE}$ pointwise:
 
 <details>
 <summary>Remark on justification of minimization.</summary>
@@ -553,7 +553,7 @@ F(f) = \int_{S} g(f(s),s) \, \mu(ds)
 $$
 for some measurable $g: \mathcal{X} \times S \rightarrow \mathbb{R}$ and positive measure $\mu$ on $S$
 
-A global minimization problem is 
+A global minimization problem is
 $$
 \begin{equation}
 f^* = \operatorname*{argmin}_{f\in\mathcal{F}} F(f)
@@ -583,6 +583,8 @@ This reduction is only valid if:
 2. $\mu$ is a positive measure, to guarantee the preservation of inequalities
 3. The pointwise minimizer $\operatorname*{argmin}_{c} g(c,s)$ is itself measurable, hence $f^* \in \mathcal{F}$
 
+:::
+</details>
 $$
 \begin{equation}
 f(x) = \operatorname*{argmin}_c \text{E}_{Y|X}[(Y-c)^2\mid X=x]
