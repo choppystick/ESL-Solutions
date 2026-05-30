@@ -761,6 +761,172 @@ Thus, we have shown that the least square solution approaches the theoretical $\
 
 ### L1 loss function
 
+We want to show that given $L^1$ loss, the $\text{EPE}(f)$ is minimized by $f(x) = \text{median}(Y \mid X = x)$. We first have that the median for any distribution is:
+
+$$
+\begin{equation}
+c^* = \inf\{t : F_X(t) \geq \tfrac{1}{2}\} = Q\!\left(\tfrac{1}{2}\right)
+\end{equation}
+$$
+
+where $Q(p) := F_X^{-1}(p)$ is the quantile function.
+
+We show that the median $c^*$ satisfies both:
+
+$$
+\begin{equation}
+\text{(i)}\ P(X \leq c^*) \geq \frac{1}{2} \qquad \text{and} \qquad \text{(ii)}\ P(X \geq c^*) \geq \frac{1}{2}
+\end{equation}
+$$
+
+
+To establish (i), take a sequence $\{t_n\}$ with $t_n \downarrow c^*$. Since each $t_n > c^* = \inf\{t : F_X(t) \geq 1/2\}$, each $t_n$ belongs to $\{t : F_X(t) \geq 1/2\}$, so $F_X(t_n) \geq 1/2$ for every $n$. By right-continuity of $F_X$, we have $F_X(t_n) \to F_X(c^*)$ as $t_n \downarrow c^*$, and hence $F_X(c^*) \geq 1/2$ and $P(X \leq c^*) \geq 1/2$.
+
+To establish (ii), let $t < c^*$. By definition of the infimum, $t \notin \{s : F_X(s) \geq 1/2\}$, so $F_X(t) < 1/2$. Taking $t \uparrow c^*$, we obtain $F_X(c^{*-}) \leq 1/2$. Since $F_X(c^{*-}) = P(X < c^*)$, it follows that $P(X < c^*) \leq 1/2$, and therefore:
+
+$$
+\begin{equation}
+P(X \geq c^*) = 1 - P(X < c^*) \geq \frac{1}{2}
+\end{equation}
+$$
+
+We now show that the median minimizes expected absolute deviation. Let $X$ be a real-valued random variable with $\text{E}[|X|] < \infty$, and let $c^*$ be its median. Then for every $c \in \mathbb{R}$:
+
+$$
+\begin{equation}
+\text{E}[|X - c|] \geq \text{E}[|X - c^*|]
+\end{equation}
+$$
+
+We analyze three cases: (i) $c = c^*$, (ii) $c > c^*$, (iii) $c < c^*$.
+
+(i) $c = c^*$, the inequality holds with equality.
+
+(ii) Suppose that $c > c^*$, and let $\delta = c - c^* > 0$. We partition the real line into three events:
+
+$$
+\begin{equation}
+A = \{X \leq c^*\}, \quad B = \{c^* < X \leq c\}, \quad C = \{X > c\}
+\end{equation}
+$$
+
+We compute the pointwise difference $|X - c| - |X - c^*|$ on each event. On $A$, since $X \leq c^* < c$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (c - X) - (c^* - X) = c - c^* = \delta
+\end{equation}
+$$
+
+On $B$, since $c^* < X \leq c$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (c - X) - (X - c^*) = c + c^* - 2X
+\end{equation}
+$$
+
+On $C$, since $X > c > c^*$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (X - c) - (X - c^*) = -c + c^* = -\delta
+\end{equation}
+$$
+
+Integrating over the partition:
+
+$$
+\begin{equation}
+\text{E}[|X - c|] - \text{E}[|X - c^*|] = \delta P(A) - \delta P(C) + \text{E}[(c + c^* - 2X)\mathbf{1}_B]
+\end{equation}
+$$
+
+We simplify the $B$-term by writing $c + c^* - 2X = 2(c - X) - \delta$:
+
+$$
+\begin{equation}
+\text{E}[(c + c^* - 2X)\mathbf{1}_B] = 2\,\text{E}[(c - X)\mathbf{1}_B] - \delta P(B)
+\end{equation}
+$$
+
+Substituting back and using $P(A) + P(B) + P(C) = 1$ to write $P(A) - P(C) - P(B) = 2P(A) - 1$:
+
+$$
+\begin{equation}
+\text{E}[|X - c|] - \text{E}[|X - c^*|] = \delta\bigl(2P(X \leq c^*) - 1\bigr) + 2\,\text{E}[(c - X)\mathbf{1}_B]
+\end{equation}
+$$
+
+The first term is non-negative since $\delta > 0$ and $P(X \leq c^*) \geq 1/2$ by (i). The second term is non-negative since on $B$ we have $X \leq c$, hence $c - X \geq 0$. Consequently $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for $c > c^*$.
+
+(iii) Suppose that $c < c^*$, and let $\delta = c^* - c > 0$. We partition the real line into:
+
+$$
+\begin{equation}
+A' = \{X < c\}, \quad B' = \{c \leq X < c^*\}, \quad C' = \{X \geq c^*\}
+\end{equation}
+$$
+
+The same pointwise computation gives, on $A'$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (c - X) - (c^* - X) = c - c^* = -\delta
+\end{equation}
+$$
+
+on $B'$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (X - c) - (c^* - X) = 2X - c - c^*
+\end{equation}
+$$
+
+and on $C'$:
+
+$$
+\begin{equation}
+|X - c| - |X - c^*| = (X - c) - (X - c^*) = c^* - c = \delta
+\end{equation}
+$$
+
+Integrating and simplifying the $B'$-term by writing $2X - c - c^* = 2(X - c) - \delta$:
+
+$$
+\begin{equation}
+\begin{split}
+\text{E}[|X - c|] - \text{E}[|X - c^*|] &= -\delta P(A') + \delta P(C') + 2\,\text{E}[(X-c)\mathbf{1}_{B'}] - \delta P(B') \\
+&= \delta\bigl(2P(X \geq c^*) - 1\bigr) + 2\,\text{E}[(X - c)\mathbf{1}_{B'}]
+\end{split}
+\end{equation}
+$$
+
+where we used $P(C') - P(A') - P(B') = 2P(C') - 1$. The first term is non-negative by (ii), and the second is non-negative since $X \geq c$ on $B'$. Hence $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for $c < c^*$.
+
+In all three cases the inequality holds.
+
+Therefore under $L^1$ loss, the function $f^*(x) = \text{median}(Y \mid X = x)$ minimizes the expected prediction error $\text{EPE}(f) = \text{E}[|Y - f(X)|]$
+
+Given $\text{EPE}(f) = \text{E}[|Y - f(X)|]$, we condition on $X$ and minimize pointwise:
+
+$$
+\begin{equation}
+\text{E}[|Y - f(X)|] = \text{E}_X\,\text{E}_{Y|X}[|Y - c| \mid X = x], \qquad c = f(x)
+\end{equation}
+$$
+
+Hence:
+
+$$
+\begin{equation}
+f(x) = \operatorname*{argmin}_c\, \text{E}_{Y|X}[|Y - c| \mid X = x]
+\end{equation}
+$$
+
+As we have established $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for every $c \in \mathbb{R}$, the constant $c^*$ is the global minimizer. Hence $f(x) = \text{median}(Y \mid X = x)$ is the solution.
+
 ### Optimal Function of Categorical Variable
 
 Suppose that the output is a categorical variable $G$, a different loss function is needed. Let $\hat{G}$ be an estimate of values in $\mathcal{G}$, the set of all possible classes. Our loss function can be represented as a $K \times K$ matrix $\textbf{L}$, where $K = \text{card}(\mathcal{G})$. $\textbf{L}$ will be zero on the diagonal and nonnegative elsewhere, where $L(k, \ell)$ is the loss for classifying an observation belonging to $\mathcal{G}_k$ as $\mathcal{G}_\ell$, i.e.
@@ -773,6 +939,7 @@ $$
               \vdots & \vdots & \vdots & \ddots & \vdots \\
               L(\mathcal{G}_K, \mathcal{G}_1) & L(\mathcal{G}_K, \mathcal{G}_2) & L(\mathcal{G}_K, \mathcal{G}_3) & \dots  & 0
 \end{bmatrix}
+(\#eq:Lmatrix)
 \end{equation}
 $$
 
@@ -847,6 +1014,7 @@ $$
 \begin{split}
 \hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} \text{P}(\mathcal{G}_k|X=x) &= \operatorname*{argmin}_{g\in\mathcal{G}}(1-\text{P}(g|X=x)) \\ &= \operatorname*{argmax}_{g\in\mathcal{G}} \text{P}(g|X=x)
 \end{split}
+(\#eq:Bclass)
 \end{equation}
 $$
 
@@ -892,6 +1060,7 @@ ggplot() +
   ) +
   coord_fixed(ratio = 0.75)
 ```
+
 $k$-nearest neighbor approximates the Bayesian solution - except that conditional probability at a point is relaxed to conditional probability within a neighborhood of a point.
 
 ## Local Methods in High Dimensions
@@ -921,6 +1090,292 @@ ggplot(df, aes(x = r, y = distance, color = p)) +
   )
 ```
 
+### Median Distance to the Nearest Neighbor
+
+Another consequence is that sample points are close to an edge of the sample. Consider $N$ data points uniformly distributed in a $p$-dimensional ball centered at the origin. Suppose we consider a nearest-neighbor estimate at the origin. The median distance from the origin to the closest data point is:
+
+$$
+\begin{equation}
+d(p, N) = \left(1 - \left(\frac{1}{2}\right)^{1/N}\right)^{1/p}
+(\#eq:mediandist)
+\end{equation}
+$$
+
+<details>
+<summary>Proof of median nearest-neighbor distance formula.</summary>
+
+The proof proceeds in three stages: computation of the Jacobian determinant of the $p$-dimensional spherical coordinate map by induction; derivation of the volume of the $p$-ball via the reduction formula for $I_n = \int_0^\pi \sin^n\theta\,d\theta$ and a telescoping product of Gamma values; and finally, the order-statistic argument yielding the median.
+
+::: {.lemma}
+Define the $p$-dimensional spherical coordinate map $\Phi_p : (r, \theta_1, \ldots, \theta_{p-1}) \mapsto (x_1, \ldots, x_p)$ by
+
+$$
+\begin{equation}
+x_j = r\!\left(\prod_{k=1}^{j-1}\sin\theta_k\right)\cos\theta_j, \quad j = 1,\ldots,p-1,
+\qquad
+x_p = r\prod_{k=1}^{p-1}\sin\theta_k
+(\#eq:sphericalmap)
+\end{equation}
+$$
+
+where $\theta_k \in [0,\pi]$ for $k = 1,\ldots,p-2$, $\theta_{p-1} \in [0,2\pi)$, and empty products equal one. Then the Jacobian determinant is
+
+$$
+\begin{equation}
+J_p := \left|\det D\Phi_p\right| = r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k
+(\#eq:jacobian)
+\end{equation}
+$$
+:::
+
+::: {.proof}
+The proof is by induction on $p$. The coordinate formulas satisfy the recursion
+
+$$
+\begin{equation}
+\Phi_p(r,\theta_1,\ldots,\theta_{p-1}) = \bigl(r\cos\theta_1,\;\sin\theta_1\cdot\Phi_{p-1}(r,\theta_2,\ldots,\theta_{p-1})\bigr)
+(\#eq:phirecursion)
+\end{equation}
+$$
+
+which is verified directly: the first coordinate is $r\cos\theta_1$, and for $j \geq 2$,
+
+$$
+x_j = r\!\left(\prod_{k=1}^{j-1}\sin\theta_k\right)\cos\theta_j = r\sin\theta_1\!\left(\prod_{k=2}^{j-1}\sin\theta_k\right)\cos\theta_j = \sin\theta_1\cdot[\Phi_{p-1}(r,\theta_2,\ldots)]_j
+$$
+
+confirming that $(x_2,\ldots,x_p) = \sin\theta_1\cdot\Phi_{p-1}(r,\theta_2,\ldots,\theta_{p-1})$.
+
+For the base case $p = 2$, the map is $(r,\theta_1)\mapsto(r\cos\theta_1, r\sin\theta_1)$ and its Jacobian determinant is
+
+$$
+\det D\Phi_2 = \det\begin{pmatrix}\cos\theta_1 & -r\sin\theta_1 \\ \sin\theta_1 & r\cos\theta_1\end{pmatrix} = r\cos^2\theta_1 + r\sin^2\theta_1 = r
+$$
+
+confirming $J_2 = r$ with the empty product equal to one.
+
+Assume inductively that $J_{p-1} = r^{p-2}\prod_{k=1}^{p-3}\sin^{p-2-k}\theta_{k+1}$, where angles are indexed from $\theta_2$. Differentiating the recursion \@ref(eq:phirecursion), the Jacobian matrix $D\Phi_p$ takes the block form
+
+$$
+D\Phi_p = \begin{pmatrix}
+\cos\theta_1 & -r\sin\theta_1 & 0 & \cdots & 0 \\[4pt]
+\sin\theta_1\,\partial_r\Phi_{p-1} &
+\cos\theta_1\,\Phi_{p-1} &
+\sin\theta_1\,\partial_{\theta_2}\Phi_{p-1} &
+\cdots &
+\sin\theta_1\,\partial_{\theta_{p-1}}\Phi_{p-1}
+\end{pmatrix}
+$$
+
+where $\partial_r\Phi_{p-1}$, $\Phi_{p-1}$, and each $\partial_{\theta_k}\Phi_{p-1}$ are $(p-1)$-dimensional column vectors occupying rows 2 through $p$. Expanding the determinant along the first row,
+
+$$
+\det(D\Phi_p) = \cos\theta_1\cdot M_{11} + (-r\sin\theta_1)\cdot(-1)^{1+2}\cdot M_{12} = \cos\theta_1\cdot M_{11} + r\sin\theta_1\cdot M_{12}
+$$
+
+where $M_{11}$ and $M_{12}$ are the corresponding unsigned minors.
+
+In $M_{11}$, column 1 is $\cos\theta_1\,\Phi_{p-1}$ and columns $2$ through $p-1$ are $\sin\theta_1\,\partial_{\theta_k}\Phi_{p-1}$ for $k = 2,\ldots,p-1$. Factoring $\cos\theta_1$ from the first column and $\sin\theta_1$ from each of the remaining $p-2$ columns,
+
+$$
+M_{11} = \cos\theta_1\sin^{p-2}\theta_1\cdot\det\!\bigl[\Phi_{p-1}\mid\partial_{\theta_2}\Phi_{p-1}\mid\cdots\mid\partial_{\theta_{p-1}}\Phi_{p-1}\bigr]
+$$
+
+Since every component of $\Phi_{p-1}$ is linear in $r$, the map is homogeneous of degree one, giving $\Phi_{p-1}(r,\cdot) = r\,\partial_r\Phi_{p-1}(r,\cdot)$. Replacing the first column $\Phi_{p-1}$ by $r\,\partial_r\Phi_{p-1}$ and factoring $r$ out of that column,
+
+$$
+\det\!\bigl[\Phi_{p-1}\mid\partial_{\theta_2}\Phi_{p-1}\mid\cdots\bigr] = r\cdot\det\!\bigl[\partial_r\Phi_{p-1}\mid\partial_{\theta_2}\Phi_{p-1}\mid\cdots\bigr] = r\,J_{p-1}
+$$
+
+and hence $M_{11} = r\cos\theta_1\sin^{p-2}\theta_1\,J_{p-1}$.
+
+In $M_{12}$, every column carries a factor of $\sin\theta_1$: column 1 is $\sin\theta_1\,\partial_r\Phi_{p-1}$ and the remaining $p-2$ columns are $\sin\theta_1\,\partial_{\theta_k}\Phi_{p-1}$. Factoring $\sin\theta_1$ from all $p-1$ columns,
+
+$$
+M_{12} = \sin^{p-1}\theta_1\cdot\det\!\bigl[\partial_r\Phi_{p-1}\mid\partial_{\theta_2}\Phi_{p-1}\mid\cdots\bigr] = \sin^{p-1}\theta_1\,J_{p-1}
+$$
+
+Substituting both minors into the expansion and collecting,
+
+$$
+\det(D\Phi_p) = r\cos^2\theta_1\sin^{p-2}\theta_1\,J_{p-1} + r\sin^p\theta_1\,J_{p-1} = r\,J_{p-1}\sin^{p-2}\theta_1\underbrace{\bigl(\cos^2\theta_1 + \sin^2\theta_1\bigr)}_{=\,1} = r\sin^{p-2}\theta_1\,J_{p-1}
+$$
+
+Applying the inductive hypothesis and re-indexing the product via $m = k+1$,
+
+$$
+J_p = r\sin^{p-2}\theta_1\cdot r^{p-2}\prod_{k=1}^{p-3}\sin^{p-2-k}\theta_{k+1} = r^{p-1}\sin^{p-2}\theta_1\prod_{m=2}^{p-2}\sin^{p-1-m}\theta_m = r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k
+$$
+
+where the $k=1$ term of the final product recovers $\sin^{p-2}\theta_1$, completing the induction. $\square$
+:::
+
+---
+
+::: {.proposition}
+The volume of the $p$-dimensional ball of radius $R$ is
+
+$$
+\begin{equation}
+V_p(R) = \frac{\pi^{p/2}}{\Gamma\!\left(\frac{p}{2}+1\right)}R^p
+(\#eq:volball)
+\end{equation}
+$$
+:::
+
+:::{.proof}
+By the Lemma, the volume element is $r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k\,dr\,d\theta_1\cdots d\theta_{p-1}$. Since the integrand separates over independent variables,
+
+$$
+\begin{equation}
+V_p(R) = \underbrace{\int_0^R r^{p-1}\,dr}_{=\,R^p/p} \cdot \underbrace{\int_0^{2\pi}d\theta_{p-1}}_{=\,2\pi} \cdot \prod_{k=1}^{p-2}\underbrace{\int_0^\pi\sin^{p-1-k}\theta_k\,d\theta_k}_{=\,I_{p-1-k}}
+\end{equation}
+$$
+
+where $I_n := \int_0^\pi\sin^n\theta\,d\theta$. Re-indexing via $j = p-1-k$ (as $k$ runs from $1$ to $p-2$, $j$ runs over the same set $\{1,\ldots,p-2\}$),
+
+$$
+\begin{equation}
+V_p(R) = \frac{R^p}{p}\cdot 2\pi\cdot\prod_{j=1}^{p-2}I_j
+(\#eq:volprod)
+\end{equation}
+$$
+
+Integrating by parts with $u = \sin^{n-1}\theta$ and $dv = \sin\theta\,d\theta$, so $du = (n-1)\sin^{n-2}\theta\cos\theta\,d\theta$ and $v = -\cos\theta$,
+
+$$
+I_n = \bigl[-\sin^{n-1}\theta\cos\theta\bigr]_0^\pi + (n-1)\int_0^\pi\sin^{n-2}\theta\cos^2\theta\,d\theta
+$$
+
+Since $\sin(0) = \sin(\pi) = 0$, the boundary term vanishes. Substituting $\cos^2\theta = 1-\sin^2\theta$ and splitting,
+
+$$
+I_n = (n-1)\int_0^\pi\sin^{n-2}\theta\,d\theta - (n-1)\int_0^\pi\sin^n\theta\,d\theta = (n-1)I_{n-2} - (n-1)I_n
+$$
+
+Adding $(n-1)I_n$ to both sides and dividing by $n$,
+
+$$
+\begin{equation}
+I_n = \frac{n-1}{n}\,I_{n-2}
+(\#eq:Inreduction)
+\end{equation}
+$$
+
+with base cases $I_0 = \pi$ and $I_1 = 2$.
+
+For even $n = 2m$ with $m \geq 1$, applying \@ref(eq:Inreduction) repeatedly until reaching $I_0$,
+
+$$
+\begin{equation}
+I_{2m} = \frac{2m-1}{2m}\cdot\frac{2m-3}{2m-2}\cdots\frac{3}{4}\cdot\frac{1}{2}\cdot I_0 = \frac{(2m-1)!!}{(2m)!!}\,\pi
+(\#eq:Ieven)
+\end{equation}
+$$
+
+For odd $n = 2m+1$ with $m \geq 0$, applying \@ref(eq:Inreduction) repeatedly until reaching $I_1$,
+
+$$
+\begin{equation}
+I_{2m+1} = \frac{2m}{2m+1}\cdot\frac{2m-2}{2m-1}\cdots\frac{4}{5}\cdot\frac{2}{3}\cdot I_1 = \frac{(2m)!!}{(2m+1)!!}\cdot 2
+(\#eq:Iodd)
+\end{equation}
+$$
+
+Using the double factorial identities $(2m)!! = 2^m m!$ and $(2m-1)!! = 2^m\Gamma(m+\tfrac{1}{2})/\sqrt{\pi}$, we substitute into \@ref(eq:Ieven) for the even case:
+
+$$
+I_{2m} = \frac{\dfrac{2^m\,\Gamma(m+\frac{1}{2})}{\sqrt{\pi}}}{2^m m!}\,\pi = \frac{\sqrt{\pi}\,\Gamma\!\left(m+\tfrac{1}{2}\right)}{m!} = \frac{\sqrt{\pi}\,\Gamma\!\left(m+\tfrac{1}{2}\right)}{\Gamma(m+1)}
+$$
+
+Setting $n = 2m$, so $m = n/2$, gives $I_n = \sqrt{\pi}\,\Gamma\!\bigl(\tfrac{n+1}{2}\bigr)/\Gamma\!\bigl(\tfrac{n}{2}+1\bigr)$.
+
+For the odd case, the functional equation $\Gamma(m+\tfrac{3}{2}) = (m+\tfrac{1}{2})\Gamma(m+\tfrac{1}{2})$ applied recursively gives $(2m+1)!! = 2^{m+1}\Gamma(m+\tfrac{3}{2})/\sqrt{\pi}$. Substituting into \@ref(eq:Iodd),
+
+$$
+I_{2m+1} = \frac{2^m m!}{\dfrac{2^{m+1}\Gamma(m+\frac{3}{2})}{\sqrt{\pi}}}\cdot 2 = \frac{2^{m+1}m!\sqrt{\pi}}{2^{m+1}\Gamma\!\left(m+\tfrac{3}{2}\right)} = \frac{\sqrt{\pi}\,\Gamma(m+1)}{\Gamma\!\left(m+\tfrac{3}{2}\right)}
+$$
+
+Setting $n = 2m+1$, so $\Gamma(m+1) = \Gamma\!\bigl(\tfrac{n+1}{2}\bigr)$ and $\Gamma(m+\tfrac{3}{2}) = \Gamma\!\bigl(\tfrac{n}{2}+1\bigr)$, gives the same expression. Both parities therefore yield the unified form
+
+$$
+\begin{equation}
+I_n = \frac{\sqrt{\pi}\,\Gamma\!\left(\tfrac{n+1}{2}\right)}{\Gamma\!\left(\tfrac{n}{2}+1\right)}
+(\#eq:Ingamma)
+\end{equation}
+$$
+
+Substituting $I_n$ into the product in \@ref(eq:volprod), and writing $\sqrt{\pi} = \Gamma\!\bigl(\tfrac{1}{2}\bigr)$ and using the identity $\Gamma\!\bigl(\tfrac{1}{2}\bigr)^{p-2} = \pi^{(p-2)/2}$,
+
+$$
+\begin{equation}
+\begin{split}
+\prod_{j=1}^{p-2}I_j = \prod_{j=1}^{p-2}\frac{\Gamma\!\left(\tfrac{1}{2}\right)\Gamma\!\left(\tfrac{j+1}{2}\right)}{\Gamma\!\left(\tfrac{j+2}{2}\right)}
+                     = \pi^{(p-2)/2}\prod_{j=1}^{p-2}\frac{\Gamma\!\left(\tfrac{j+1}{2}\right)}{\Gamma\!\left(\tfrac{j+2}{2}\right)}
+\end{split}
+\end{equation}
+$$
+
+Writing the product explicitly,
+
+$$
+\prod_{j=1}^{p-2}\frac{\Gamma\!\left(\tfrac{j+1}{2}\right)}{\Gamma\!\left(\tfrac{j+2}{2}\right)} = \frac{\Gamma\!\left(\tfrac{2}{2}\right)}{\Gamma\!\left(\tfrac{3}{2}\right)}\cdot\frac{\Gamma\!\left(\tfrac{3}{2}\right)}{\Gamma\!\left(\tfrac{4}{2}\right)}\cdot\frac{\Gamma\!\left(\tfrac{4}{2}\right)}{\Gamma\!\left(\tfrac{5}{2}\right)}\cdots\frac{\Gamma\!\left(\tfrac{p-1}{2}\right)}{\Gamma\!\left(\tfrac{p}{2}\right)}
+$$
+
+all interior terms cancel telescopically, leaving
+
+$$
+\frac{\Gamma(1)}{\Gamma\!\left(\tfrac{p}{2}\right)} = \frac{1}{\Gamma\!\left(\tfrac{p}{2}\right)}
+$$
+
+Therefore,
+
+$$
+\begin{equation}
+\prod_{j=1}^{p-2}I_j = \frac{\pi^{(p-2)/2}}{\Gamma\!\left(\tfrac{p}{2}\right)}
+(\#eq:prodIj)
+\end{equation}
+$$
+
+Substituting \@ref(eq:prodIj) into \@ref(eq:volprod),
+
+$$
+V_p(R) = \frac{R^p}{p}\cdot 2\pi\cdot\frac{\pi^{(p-2)/2}}{\Gamma\!\left(\tfrac{p}{2}\right)} = \frac{2\pi^{p/2}R^p}{p\,\Gamma\!\left(\tfrac{p}{2}\right)}
+$$
+
+Applying $\Gamma\!\bigl(\tfrac{p}{2}+1\bigr) = \tfrac{p}{2}\,\Gamma\!\bigl(\tfrac{p}{2}\bigr)$, so that $p\,\Gamma\!\bigl(\tfrac{p}{2}\bigr) = 2\,\Gamma\!\bigl(\tfrac{p}{2}+1\bigr)$
+
+$$
+V_p(R) = \frac{2\pi^{p/2}R^p}{2\,\Gamma\!\left(\tfrac{p}{2}+1\right)} = \frac{\pi^{p/2}}{\Gamma\!\left(\tfrac{p}{2}+1\right)}R^p \qquad\square
+$$
+:::
+
+---
+
+::: {.proof}
+Since $X_1$ is uniformly distributed on $\mathbb{B}^p$, the probability that $X_1$ lies within distance $m$ of the origin is the ratio of volumes. By the Proposition, the normalization constants cancel:
+
+$$
+P(\|X_1\|\leq m) = \frac{V_p(m)}{V_p(1)} = \frac{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}\,m^p}{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}} = m^p
+$$
+
+Thus the CDF of $\|X_1\|$ is $F(m) = m^p$. Let $D_{(1)} = \min_{i=1}^{N}\|X_i\|$. The event $\{D_{(1)} > m\}$ is the intersection of $N$ independent events, each with probability $1-m^p$, so
+
+$$
+P(D_{(1)} > m) = \prod_{i=1}^{N}P(\|X_i\| > m) = (1-m^p)^N
+$$
+
+and therefore $P(D_{(1)}\leq m) = 1-(1-m^p)^N$. The median $d = d(p,N)$ satisfies $P(D_{(1)}\leq d) = \tfrac{1}{2}$, giving
+
+$$
+1-(1-d^p)^N = \tfrac{1}{2} \implies (1-d^p)^N = \tfrac{1}{2} \implies 1-d^p = \left(\tfrac{1}{2}\right)^{1/N} \implies d(p,N) = \left(1-\left(\tfrac{1}{2}\right)^{1/N}\right)^{1/p}
+$$
+:::
+
+</details>
+<br>
+
+For $p = 10$ and $N = 500$, this gives $d(10,500) \approx 0.52$, meaning the nearest neighbor is typically more than halfway to the boundary. Thus the nearest neighbor of the origin is not at all local, and this effect worsens rapidly with dimension.
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
 [^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat)
