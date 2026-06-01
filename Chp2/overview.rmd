@@ -26,11 +26,11 @@ color <- function(x, color) {
 
 ## Variable Types and Terminologies
 
-Symbols and variable conventions follow the rules outlined below by the textbook: $\newline$ Input variable is denoted by the symbol $X$. If $X$ is a vector, then its components is accessed by subscripts $X_j$. Quantitative outputs are denoted by $Y$, and qualitative outputs by $G$. Observed values are written in lowercase; for example the $i$th observed value of $X$ is written as $x_i$ (where $x_i$ is a scalar or vector). Matrices are represented by bold uppercase letters; for example, a set of $N$ input $p$-vectors $x_i$, $i = 1, ... , N$ is represented by the $N \times p$ matrix $\textbf{X}$. In general, vectors will not be bold, except when they have $N$ components; this convention distinguishes a $p$-vector of inputs $x_i$ for the $i$th observations from the $N$-vector $\textbf{x}_j$ consisting of all the observations on variable $X_j$. Since all vectors are assumed to be column vectors, the $i$th row of $\textbf{X}$ is $x_i^{T}$, the vector transpose of $x_i$.
+Symbols and variable conventions follow the rules outlined by the textbook. Input variables are denoted by the symbol $X$. If $X$ is a vector, then its components are accessed by subscripts $X_j$. Quantitative outputs are denoted by $Y$, and qualitative outputs by $G$. Observed values are written in lowercase; for example the $i$th observed value of $X$ is written as $x_i$ (where $x_i$ is a scalar or vector). Matrices are represented by bold uppercase letters; for example, a set of $N$ input $p$-vectors $x_i$, $i = 1, \ldots, N$ is represented by the $N \times p$ matrix $\mathbf{X}$. In general, vectors are not bold, except when they have $N$ components; this convention distinguishes a $p$-vector of inputs $x_i$ for the $i$th observation from the $N$-vector $\mathbf{x}_j$ consisting of all the observations on variable $X_j$. Since all vectors are assumed to be column vectors, the $i$th row of $\mathbf{X}$ is $x_i^{T}$, the vector transpose of $x_i$.
 
 For most learning tasks, we can understand it as such: given an input vector $X$, we want to make a good prediction of the output $Y$, denoted as $\hat{Y}$. If $Y\in\mathbb{R}$ then $\hat{Y}$ too; likewise for categorical outputs, $\hat{G}$ should take values in the same set $\mathcal{G}$ associated with $G$.
 
-For accurate prediction, data is necessary. We denote training data as a set of measurements $(x_i,y_i)$ or $(x_i,g_i)$, $i = 1,...,N$.
+For accurate prediction, data is necessary. We denote training data as a set of measurements $(x_i,y_i)$ or $(x_i,g_i)$, $i = 1,\ldots,N$.
 
 ## Prediction Approaches: Least Squares and Nearest Neighbors
 
@@ -38,16 +38,16 @@ Two prediction methods are explored here: The linear model fit by least squares 
 
 ### Linear Models and Least Squares
 
-Given a vector of inputs $X^{T} = (X_1, X_2, ..., X_n)$, we predict the output $Y$ via the model:
+Given a vector of inputs $X^{T} = (X_1, X_2, \ldots, X_p)$, we predict the output $Y$ via the model:
 
 $$
 \begin{equation}
-\hat{Y} = \hat{\beta_0} + \sum_{j=1}^{n} X_j\hat{\beta}_j
+\hat{Y} = \hat{\beta}_0 + \sum_{j=1}^{p} X_j\hat{\beta}_j
 (\#eq:leq)
 \end{equation}
 $$
 
-where $\hat{\beta_0}$ is the intercept. Equivalently, we can write the linear model in vector form as an inner product:
+where $\hat{\beta}_0$ is the intercept. Equivalently, we can write the linear model in vector form as an inner product:
 
 $$
 \begin{equation}
@@ -56,39 +56,42 @@ $$
 \end{equation}
 $$
 
-where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_n\end{pmatrix}\in\mathbb{R^{n+1}}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_n\end{pmatrix}\in\mathbb{R}^{n+1}$, such that $\hat{Y} = \sum_{i=0}^{n}\hat{\beta}_i x_i$.
+where $X = \begin{pmatrix}1\\x_1\\\vdots\\x_p\end{pmatrix}\in\mathbb{R}^{p+1}$ and $\hat{\beta} = \begin{pmatrix}\hat{\beta}_0\\\hat{\beta}_1\\\vdots\\\hat{\beta}_p\end{pmatrix}\in\mathbb{R}^{p+1}$, such that $\hat{Y} = \sum_{i=0}^{p}\hat{\beta}_i x_i$.
 
-If $\textbf{X}$ is instead a feature matrix with $p$ features and $m$ samples such that $\textbf{X}\in\mathbb{R^{m\times p}}$, where $p=n+1$, we can represent $\textbf{X}^{T}$ as a $p$-dimensional row vector $\begin{bmatrix} X_0 \; X_1 \; X_2 \; ... \; X_n \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R^m}$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(m)}]$, $X_0$ is a constant vector of $1$ and suppose that $\hat{Y}$ is a $k$-dimensional row vector instead of a scalar, then by equation \@ref(eq:leq), $\beta$ must necessarily be a $p \times K$ matrix of coefficients.
+If $\mathbf{X}$ is instead a feature matrix with $N$ samples and $p+1$ columns (the $p$ inputs together with a leading constant), so that $\mathbf{X}\in\mathbb{R}^{N\times(p+1)}$, we can represent $\mathbf{X}^{T}$ as the row of column vectors $\begin{bmatrix} X_0 & X_1 & X_2 & \ldots & X_p \end{bmatrix}$, where each $X_j$ is a column vector in $\mathbb{R}^N$. For example, $X_1^T = [x_1^{(1)} \; x_1^{(2)} \; \ldots \; x_1^{(N)}]$ and $X_0$ is a constant vector of ones. Suppose further that $\hat{Y}$ is a $K$-dimensional row vector instead of a scalar; then by equation \@ref(eq:leq), $\beta$ must necessarily be a $(p+1) \times K$ matrix of coefficients.
 
 <details>
-<summary>Remark on linear model as a hyperplane.</summary>
-:::{.remark}
-In the $(p+1)$-dimensional input-output space, the tuple $(X, \hat{Y})$ represents a hyperplane. This follows directly from the linear structure of equation \@ref(eq:leqvec):
+<summary>Proposition: the linear model is a hyperplane.</summary>
+
+::: {.proposition #prp-hyperplane}
+In the $(p+1)$-dimensional input-output space, the graph $(X, \hat{Y})$ of the linear model \@ref(eq:leqvec) is a hyperplane.
+:::
+
+*Proof.* By the linear structure of equation \@ref(eq:leqvec),
 
 $$
 \begin{equation}
 \begin{split}
 \hat{Y} &= X^{T}\beta \\
-        &= \sum_{i=0}^{n} \beta_i x_i \\
-        &= \beta_0 + \sum_{i=1}^n \beta_i x_i
+        &= \sum_{i=0}^{p} \beta_i x_i \\
+        &= \beta_0 + \sum_{i=1}^p \beta_i x_i
 \end{split}
 \end{equation}
 $$
 
-Swapping the LHS with the RHS term:
+Moving the intercept to the left-hand side,
 
 $$
 \begin{equation}
 \begin{split}
--\beta_0 &= \sum_{i=1}^{n} \beta_i x_i - \hat{Y}\\
-         &= \sum_{i=1}^n \beta_i x_i + (-1)\hat{Y}\\
-         &= (\beta_1 \; \beta_2 \; ... \beta_n)\;\cdot\;(x_1 \; x_2 \; ... \; \hat{Y})^T \\
+-\beta_0 &= \sum_{i=1}^{p} \beta_i x_i - \hat{Y} \\
+         &= \sum_{i=1}^p \beta_i x_i + (-1)\hat{Y} \\
+         &= \begin{pmatrix}\beta_1 & \ldots & \beta_p & -1\end{pmatrix}\begin{pmatrix}x_1 & \ldots & x_p & \hat{Y}\end{pmatrix}^T
 \end{split}
 \end{equation}
 $$
 
-A hyperplane is defined as $\textbf{w}^{T}\textbf{z}= b$. In our case, by letting $\textbf{w} = (\beta_1 \; \beta_2 \; ... \beta_n)^T$ and $\textbf{z}=(x_1 \; x_2 \;...\;\hat{Y})^T$, we obtain $\textbf{w}^{T}\textbf{z} = -\beta_0$ (our intercept $\beta_0$ translates the hyperplane away from the origin).
-:::
+A hyperplane is defined by $\mathbf{w}^{T}\mathbf{z}= b$. Letting $\mathbf{w} = (\beta_1\ \ldots\ \beta_p\ {-1})^T$ and $\mathbf{z}=(x_1\ \ldots\ x_p\ \hat{Y})^T$, we obtain $\mathbf{w}^{T}\mathbf{z} = -\beta_0$, where the intercept $\beta_0$ translates the hyperplane away from the origin. $\qquad\square$
 </details>
 
 ### Residual Sum of Squares
@@ -97,63 +100,65 @@ To fit our training data to the linear model, we use the method of least squares
 
 $$
 \begin{equation}
-RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2
+\text{RSS}(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2
 (\#eq:RSS)
 \end{equation}
 $$
 
-$RSS(\beta)$ is a quadratic function of the parameters, hence its minimum always exist but may not be unique.
+$\text{RSS}(\beta)$ is a quadratic function of the parameters, hence its minimum always exists but may not be unique.
 
 <details>
-<summary>Remark on the existence and non-uniqueness of a minimum for RSS</summary>
-:::{.remark}
-We first prove that a minimum always exists for the RSS by establishing that RSS is a convex function with at least one critical point, which guarantees a global minimum.
+<summary>Proposition: existence and uniqueness of the RSS minimizer.</summary>
 
-To analyze the structure of RSS, we expand the quadratic form:
+::: {.proposition #prp-rss-min}
+The residual sum of squares $\text{RSS}(\beta)$ in \@ref(eq:RSS) always attains a minimum. The minimizer is unique if and only if $\mathbf{X}^T\mathbf{X}$ is invertible.
+:::
 
-$$
-\begin{equation}
-RSS(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2 = \sum_{i=1}^{N} (y_i^2 + (x_{i}^{T}\beta)^2 - 2y_ix_i^{T}\beta)
-\end{equation}
-$$
-
-By linearity of summation and the dot product identities $\sum_{i=1}^N x_ix_i^T= \textbf{X}^T\textbf{X}$ and $\textbf{X}^T\textbf{y} = \sum_{i=1}^N x_iy_i$, this becomes:
+*Proof.* We first establish that $\text{RSS}$ is a convex function with at least one critical point, which guarantees a global minimum. Expanding the quadratic form,
 
 $$
 \begin{equation}
-\begin{split}
-RSS(\beta) &= \sum_{i=1}^{N} y_i^2 + \sum_{i=1}^{N}\beta^Tx_ix_i^T\beta - \sum_{i=1}^{N}2y_ix_i^{T}\beta\\
-           &= ||\textbf{y}||^2 +\beta^T\textbf{X}^T\textbf{X}\beta - 2\textbf{X}^T\textbf{y}\beta
-\end{split}
+\text{RSS}(\beta) = \sum_{i=1}^{N} (y_i - x_{i}^{T}\beta)^2 = \sum_{i=1}^{N} (y_i^2 + (x_{i}^{T}\beta)^2 - 2y_ix_i^{T}\beta)
 \end{equation}
 $$
 
-To establish convexity for RSS, we show its Hessian matrix $\nabla^2 RSS(\beta) = 2\textbf{X}^T\textbf{X}$ is positive semidefinite as RSS is twice differentiable. A matrix M is positive semidefinite if $x^TMx \geq 0$ for all $x$ in $\mathbb{R}^n$. As:
-
-$$
-\begin{equation}
-v^T\textbf{X}^T\textbf{X}v = (\textbf{X}v)^T\textbf{X}v = ||\textbf{X}v||^2\geq0
-\end{equation}
-$$
-
-, we showed that RSS is convex.
-
-Next, we need to establish that a critical point exists and this critical point must necessarily be a minimum. To find a critical point, we compute the gradient[^1]:
+By linearity of summation and the identities $\sum_{i=1}^N x_ix_i^T= \mathbf{X}^T\mathbf{X}$ and $\sum_{i=1}^N x_iy_i = \mathbf{X}^T\mathbf{y}$, this becomes
 
 $$
 \begin{equation}
 \begin{split}
-\nabla_{\beta}RSS(\beta) &= -2\textbf{X}^T(\textbf{y}-\textbf{X}\beta) \\
-                         &= -2\textbf{X}^T\textbf{y} + 2\textbf{X}^T\textbf{X}\beta
+\text{RSS}(\beta) &= \sum_{i=1}^{N} y_i^2 + \sum_{i=1}^{N}\beta^Tx_ix_i^T\beta - \sum_{i=1}^{N}2y_ix_i^{T}\beta\\
+           &= \|\mathbf{y}\|^2 +\beta^T\mathbf{X}^T\mathbf{X}\beta - 2\beta^T\mathbf{X}^T\mathbf{y}
 \end{split}
 \end{equation}
 $$
 
-Thus, a critical point must satisfy the normal equation $\textbf{X}^T\textbf{y} = \textbf{X}^T\textbf{X}\beta$. The problem of determining the existence of a critical point can now be reduced to a simple problem of determining that the normal equation is consistent:
+To establish convexity, we show that the Hessian $\nabla^2 \text{RSS}(\beta) = 2\mathbf{X}^T\mathbf{X}$ is positive semidefinite, noting that $\text{RSS}$ is twice differentiable. A matrix $M$ is positive semidefinite if $v^TMv \geq 0$ for all $v \in \mathbb{R}^p$. Since
 
-A linear system $Ax = b$ has a solution if and only if $b \in \text{Col}(A)$. For the normal equations $\textbf{X}^T\textbf{X}\beta = \textbf{X}^T\textbf{y}$, we need $\textbf{X}^T\textbf{y} \in \text{col}(\textbf{X}^T\textbf{X})$. Since $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$[^2] and $\textbf{X}^T\textbf{y}$ is, by definition, a linear combination of the columns of $\textbf{X}^T$, we have $\textbf{X}^T\textbf{y} \in \text{Col}(\textbf{X}^T) = \text{Col}(\textbf{X}^T\textbf{X})$. Since a consistent system has at least one solution, RSS always has at least one critical point.
+$$
+\begin{equation}
+v^T\mathbf{X}^T\mathbf{X}v = (\mathbf{X}v)^T\mathbf{X}v = \|\mathbf{X}v\|^2\geq0
+\end{equation}
+$$
 
-Lastly, we show that for convex functions, any critical point is necessarily a global minimum. Let $f:\mathbb{R}^n\to\mathbb{R}$ be convex and differentiable at $x^*$ for any $x\in\mathbb{R}^n$, and $\nabla f(x^*) = 0$, then $x^*$ is a global minimum. By the first-order characterization of convexity[^3]:
+it follows that $\text{RSS}$ is convex.
+
+Next, we establish that a critical point exists and that it must be a minimum. To find a critical point, we compute the gradient[^1]:
+
+$$
+\begin{equation}
+\begin{split}
+\nabla_{\beta}\text{RSS}(\beta) &= -2\mathbf{X}^T(\mathbf{y}-\mathbf{X}\beta) \\
+                         &= -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\beta
+\end{split}
+\end{equation}
+$$
+
+Thus, a critical point must satisfy the normal equation $\mathbf{X}^T\mathbf{y} = \mathbf{X}^T\mathbf{X}\beta$. The problem of determining the existence of a critical point can now be reduced to a simple problem of determining that the normal equation is consistent:
+
+A linear system $Ax = b$ has a solution if and only if $b \in \text{Col}(A)$. For the normal equations $\mathbf{X}^T\mathbf{X}\beta = \mathbf{X}^T\mathbf{y}$, we need $\mathbf{X}^T\mathbf{y} \in \text{Col}(\mathbf{X}^T\mathbf{X})$. Since $\text{Col}(\mathbf{X}^T\mathbf{X}) = \text{Col}(\mathbf{X}^T)$[^2] and $\mathbf{X}^T\mathbf{y}$ is, by definition, a linear combination of the columns of $\mathbf{X}^T$, we have $\mathbf{X}^T\mathbf{y} \in \text{Col}(\mathbf{X}^T) = \text{Col}(\mathbf{X}^T\mathbf{X})$. Since a consistent system has at least one solution, RSS always has at least one critical point.
+
+Lastly, we show that for a convex function any critical point is necessarily a global minimum. Let $f:\mathbb{R}^p\to\mathbb{R}$ be convex and differentiable, and suppose $\nabla f(x^*) = 0$. By the first-order characterization of convexity[^3]:
 
 $$
 \begin{equation}
@@ -161,70 +166,69 @@ f(x) \geq f(x^*) + \nabla f^T(x^*)(x-x^*) =  f(x^*) + 0(x-x^*) = f(x^*)
 \end{equation}
 $$
 
-As $f(x) \geq f(x^*)$ for any $x,x^*\in dom(f)$, $f(x^*)$ is a global minimum. Therefore a minimum always exists for RSS.
+As $f(x) \geq f(x^*)$ for any $x,x^*\in \operatorname{dom}(f)$, $f(x^*)$ is a global minimum. Therefore a minimum always exists for the RSS.
 
-However, this minimum is not necessarily unique. The uniqueness depends entirely on whether $\textbf{X}^T\textbf{X}$ is invertible, leading to two cases:
+However, this minimum is not necessarily unique. The uniqueness depends entirely on whether $\mathbf{X}^T\mathbf{X}$ is invertible, leading to two cases:
 
-Case 1: $\textbf{X}^T\textbf{X}$ is invertible:
+Case 1: $\mathbf{X}^T\mathbf{X}$ is invertible:
 
-If the matrix $\textbf{X}^T\textbf{X}$ is invertible, then:
+If the matrix $\mathbf{X}^T\mathbf{X}$ is invertible, then:
 
 $$
 \begin{equation}
-\hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
+\hat\beta = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}
 \end{equation}
 $$
 
-, and $\hat{\beta}$ is a unique solution.
+is the unique solution.
 
-Case 2: $\textbf{X}^T\textbf{X}$ is singular:
+Case 2: $\mathbf{X}^T\mathbf{X}$ is singular:
 
-When $\textbf{X}^T\textbf{X}$ is singular, $\text{Ker}(\textbf{X}^T\textbf{X})$ is nontrivial. If $\beta_0$ is a solution to the normal equation and $\beta^*\in\text{Ker}(\textbf{X}^T\textbf{X})$, such that $\textbf{X}^T\textbf{X}\beta^* = 0$, then:
+When $\mathbf{X}^T\mathbf{X}$ is singular, $\text{Ker}(\mathbf{X}^T\mathbf{X})$ is nontrivial. If $\beta_0$ is a solution to the normal equation and $\beta^*\in\text{Ker}(\mathbf{X}^T\mathbf{X})$, such that $\mathbf{X}^T\mathbf{X}\beta^* = 0$, then:
 
 $$
 \begin{equation}
 \begin{split}
-\textbf{X}^T\textbf{X}(\beta_0 + \beta^*) = \textbf{X}^T\textbf{X}\beta_0 + \textbf{X}^T\textbf{X}\beta^* = \textbf{X}^T\textbf{y} + 0 = \textbf{X}^T\textbf{y}
+\mathbf{X}^T\mathbf{X}(\beta_0 + \beta^*) = \mathbf{X}^T\mathbf{X}\beta_0 + \mathbf{X}^T\mathbf{X}\beta^* = \mathbf{X}^T\mathbf{y} + 0 = \mathbf{X}^T\mathbf{y}
 \end{split}
 \end{equation}
 $$
 
-Hence $\beta_0 + \beta^*$ is itself a solution and it forms the solution set $\{\beta_0 + \beta^*|\textbf{X}^T\textbf{X}\beta = \textbf{X}^T\textbf{y} \wedge \beta^*\in \text{Ker}(\textbf{X}^T\textbf{X})\}$. Since $\text{Ker}(\textbf{X}^T\textbf{X})$ is a nontrivial linear subspace and has infinitely many elements[^4], the solution set forms an affine subspace with infinitely many elements.
+Hence $\beta_0 + \beta^*$ is itself a solution, and the solution set is $\{\beta_0 + \beta^* \mid \mathbf{X}^T\mathbf{X}\beta_0 = \mathbf{X}^T\mathbf{y},\ \beta^*\in \text{Ker}(\mathbf{X}^T\mathbf{X})\}$. Since $\text{Ker}(\mathbf{X}^T\mathbf{X})$ is a nontrivial linear subspace and therefore has infinitely many elements[^4], the solution set forms an affine subspace with infinitely many elements.
 
-Hence, while the minimum always exists, it is only unique when $\textbf{X}^T\textbf{X}$ is invertible.
-:::
+Hence, while the minimum always exists, it is unique only when $\mathbf{X}^T\mathbf{X}$ is invertible. $\qquad\square$
 </details>
-<br>
-As shown previously, $\text{RSS}(\beta)$ can be written in the matrix notation:
+
+As shown previously, $\text{RSS}(\beta)$ can be written in matrix notation:
 
 $$
 \begin{equation}
 \begin{split}
-\text{RSS}(\beta) &= \textbf{y}^T\textbf{y} +\beta^T\textbf{X}^T\textbf{X}\beta - 2\textbf{X}^T\textbf{y}\beta\\
-                  &= (\textbf{y}-\textbf{X}^T\beta)^T(y-\textbf{X}^T\beta)
+\text{RSS}(\beta) &= \mathbf{y}^T\mathbf{y} +\beta^T\mathbf{X}^T\mathbf{X}\beta - 2\beta^T\mathbf{X}^T\mathbf{y}\\
+                  &= (\mathbf{y}-\mathbf{X}\beta)^T(\mathbf{y}-\mathbf{X}\beta)
 \end{split}
 (\#eq:RSSmatrix)
 \end{equation}
 $$
 
-where $\textbf{X}$ is an $N \times p$ matrix with each row an input vector, ,and $\textbf{y}$ is an $N$-vector of the outputs in the training set. Differentiating w.r.t $\beta$ we get the normal equations:
+where $\mathbf{X}$ is an $N \times p$ matrix with each row an input vector, and $\mathbf{y}$ is an $N$-vector of the outputs in the training set. Differentiating with respect to $\beta$ we get the normal equations:
 
 $$
 \begin{equation}
-\textbf{X}^T(\textbf{y} - \textbf{X}\beta) = 0
+\mathbf{X}^T(\mathbf{y} - \mathbf{X}\beta) = 0
 (\#eq:normeq)
 \end{equation}
 $$
-If $\textbf{X}^T\textbf{X}$ is nonsingular, then we get the unique solution:
+If $\mathbf{X}^T\mathbf{X}$ is nonsingular, then we get the unique solution:
 
 $$
 \begin{equation}
-\hat\beta = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y}
-\end{equation}
+\hat\beta = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}
 (\#eq:normsol)
+\end{equation}
 $$
 
-and the fitted value at the $i$th input $x_i$ is $\hat{y}_i = \hat{y}_i(x_i) = x^{T}_i\hat{\beta}$. At an arbitrary input $x_0$, the prediction is $\hat{y}_i(x_0) = x^{T}_0\hat{\beta}$. The entire fitted surface is characterized by the $p$ parameters $\hat{\beta}$.[^5] It seems that we may not need a very large data set to fit such a model.
+and the fitted value at the $i$th input $x_i$ is $\hat{y}_i = \hat{y}(x_i) = x^{T}_i\hat{\beta}$. At an arbitrary input $x_0$, the prediction is $\hat{y}(x_0) = x^{T}_0\hat{\beta}$. The entire fitted surface is characterized by the $p$ parameters $\hat{\beta}$.[^5] It seems that we may not need a very large data set to fit such a model.
 
 ### Linear Model Simulation
 
@@ -243,13 +247,13 @@ $$
 
 There are multiple scenarios where our constructed data can come from, but we outline here specifically two types:
 
-$\textbf{Scenario 1}$: The training data in each class were generated from bivariate Gaussian distributions with uncorrelated components and different means.
+**Scenario 1**: The training data in each class were generated from bivariate Gaussian distributions with uncorrelated components and different means.
 
-In other words, our data is generated from each class $j$ with fixed mean $\mu^{(j)}$ and covariance $\Sigma^{(j)}$, and each observation $i$ is distributed with $X_i|Y=j \sim N(\mu^{(j)}, \Sigma^{(j)})$. Therefore, $P(X|Y=j) = \phi(x;\mu^{(j)},\Sigma^{(j)})$.
+In other words, our data is generated from each class $j$ with fixed mean $\mu^{(j)}$ and covariance $\Sigma^{(j)}$, and each observation $i$ is distributed with $X_i|Y=j \sim N(\mu^{(j)}, \Sigma^{(j)})$. Therefore, $\Pr(X|Y=j) = \phi(x;\mu^{(j)},\Sigma^{(j)})$.
 
-$\textbf{Scenario 2}$: The training data in each class came from a mixture of 10 low-variance Gaussian distributions, with individual means themselves distributed as Gaussian.
+**Scenario 2**: The training data in each class came from a mixture of 10 low-variance Gaussian distributions, with individual means themselves distributed as Gaussian.
 
-Essentially, we have $10$ random cluster locations $\mu_k^{(j)}$ per class, each distributed around a class specific mean $\mu^{(j)}$ with covariance $\Sigma^{(j)}$. Then for each cluster location, we generate an observation $X_i$ where $X_i|\text{Location}=k,Y=j \sim N(\mu_k^{(j)}, \Sigma)$ where $\Sigma$ is the variance of the mixture distribution. Therefore, $P(X|Y=j) = \sum_{k=1}^{10}\pi_k\phi(x;\mu_k^{(j)},\Sigma)$, where $\pi_k$ is the weight of the cluster (How likely/prominent this cluster is).
+Essentially, we have $10$ random cluster locations $\mu_k^{(j)}$ per class, each distributed around a class specific mean $\mu^{(j)}$ with covariance $\Sigma^{(j)}$. Then for each cluster location, we generate an observation $X_i$ where $X_i|\text{Location}=k,Y=j \sim N(\mu_k^{(j)}, \Sigma)$ where $\Sigma$ is the variance of the mixture distribution. Therefore, $\Pr(X|Y=j) = \sum_{k=1}^{10}\pi_k\phi(x;\mu_k^{(j)},\Sigma)$, where $\pi_k$ is the weight of the cluster (How likely/prominent this cluster is).
 
 We first demonstrate the method of how our simulated data set is generated:
 
@@ -324,17 +328,17 @@ p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
                 color = "black", linewidth = 1)
 ```
 
-In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta}\gt0.5\}$, and the two predicted classes are separated by the linear $\textit{decision boundary}\;\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
+In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta} > 0.5\}$, and the two predicted classes are separated by the linear *decision boundary* $\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
 
 ### Nearest-Neighbor Methods
 
-The nearest-neighborhood methods use observations in the training set $\mathcal{T}: \{(x_i, y_i),\;i=1,2,...,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor fit for $\hat{Y}$ as
+The nearest-neighbor methods use observations in the training set $\mathcal{T}: \{(x_i, y_i),\;i=1,2,\ldots,N\}$ closest in input space to $x$ to obtain $\hat{Y}$. We define the $k$-nearest neighbor fit for $\hat{Y}$ as
 
 $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
 $$
 
-, where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$-th smallest distance from $x$ to the training points,  and $d(x_i,x)$ is the Euclidean norm $||x_i-x||_2$.[^6] The fitted values $\hat{Y}$ is converted to a class label $\hat{G}$ as in Equation \@ref(eq:classlabel).
+where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$th smallest distance from $x$ to the training points, and $d(x_i,x)$ is the Euclidean norm $\|x_i-x\|_2$.[^6] The fitted value $\hat{Y}$ is converted to a class label $\hat{G}$ as in equation \@ref(eq:classlabel).
 
 ```{r KNNexample, echo=FALSE, fig.align="center", fig.cap="Example of a 3-NN algorithm."}
 knitr::include_graphics("Chp2/pictures/note2_1.png")
@@ -342,18 +346,19 @@ knitr::include_graphics("Chp2/pictures/note2_1.png")
 
 We can further define $k$-NN more formally as:
 
-Given test point $\textbf{x}$, we define the set of the $k$ nearest neighbors of the neighborhood $N_k$. $N_k$ is formally defined as $N_k \subseteq \mathcal{T}$ s.t. $|N_k| = k$. Furthermore, given $\forall(\textbf{x}', y') \in \mathcal{T}\backslash N_k$,[^7]
+Given a test point $\mathbf{x}$, define the neighborhood $N_k \subseteq \mathcal{T}$ of its $k$ nearest neighbors, so that $|N_k| = k$ and, for every $(\mathbf{x}', y') \in \mathcal{T}\setminus N_k$,[^7]
 
 $$
-d(\textbf{x}, \textbf{x}') \geq \operatorname*{argmax}_{(\textbf{x}'', y'') \in N_k} d(\textbf{x}, \textbf{x}'') 
+d(\mathbf{x}, \mathbf{x}') \geq \max_{(\mathbf{x}'', y'') \in N_k} d(\mathbf{x}, \mathbf{x}'')
 $$
 
 We can now define a classifier $h$ as a function returning the most common label in $N_k$:
 
 $$
-h(\textbf{x}) = \text{mode}(\{y'': (x', y') \in N_k\})
+h(\mathbf{x}) = \operatorname{mode}(\{y' : (\mathbf{x}', y') \in N_k\})
 $$
-, where we classify the neighborhood by the label of the highest occurrence.
+
+where the neighborhood is classified by its most frequent label.
 
 ```{r knn1, warning=FALSE, fig.cap="The classes are fit by 15-nearest neighbor averaging. The predicted class is chosen by majority vote amongst the 15-nearest neighbors."}
 train_features <- test_mat[, c("x1", "x2")]
@@ -389,7 +394,7 @@ ggplot() +
   coord_fixed(ratio = 0.75)
 ```
 
-In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linearmodel), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} \gt 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
+In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linearmodel), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} > 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
 
 ```{r knn2, echo=FALSE, fig.cap="Classes are coded as a binary variable and then predicted by 1-nearest neighbor classification."}
 # knn implementation
@@ -423,9 +428,9 @@ ggplot() +
 
 Figure \@ref(fig:knn2) instead shows the result for 1-nearest neighbor classification: $\hat{Y}$ is assigned the value $y_{\ell}$ of the closest point $x_{\ell}$ to $x$ in the training data. This corresponds to a Voronoi tessellation of the training data. Each point $x_i$ has an associated Voroni cell bounding the region where it is the only closest neighbor to any test point, such that, for all points $x$ in the cell, $\hat{G}(x) = g_i$. Compared to Figure \@ref(fig:knn1), the decision boundary is even more irregular. The training error is approximately an increasing function of $k$, and is always $0$ for $k=1$. As a consequence, we cannot use sum-of-squared errors on the training set as a criterion for picking $k$, as this would always result in picking $k=1$.
 
-It appears that $k$-nearest neighbor fits have a single parameter, which is the number of neighbors $k$, compared to the $p$ parameters in least-squares fit. However, the effective number of parameters of $k$-nn is $N/k$ and is generally bigger than $p$, which decreases with increasing $k$. Consider the hypothetical case where the neighborhoods are non-overlapping, given $N$ training points and $k$ points per neighborhood, we will have $N/k$ neighborhoods. As a majority vote will be casted for each neighborhood, this effectively constitutes a parameter for each neighborhood.
+It appears that $k$-nearest neighbor fits have a single parameter, which is the number of neighbors $k$, compared to the $p$ parameters in least-squares fit. However, the effective number of parameters of $k$-NN is $N/k$, which is generally larger than $p$ and decreases with increasing $k$. Consider the hypothetical case where the neighborhoods are non-overlapping: given $N$ training points and $k$ points per neighborhood, we have $N/k$ neighborhoods. As a majority vote is cast for each neighborhood, this effectively constitutes one parameter per neighborhood.
 
-```{r misclassification, warning=FALSE, fig.cap = "Misclassification curves. A single training sample of size 200 was used, and a test sample of size 10000. Orange curve is test and blue curve is training error for k-nn classification. Results for the linear regression are the orange and blue squares at 3 degree of freedom. "}
+```{r misclassification, warning=FALSE, fig.cap = "Misclassification curves. A single training sample of size 200 was used, and a test sample of size 10000. Orange curve is test and blue curve is training error for $k$-NN classification. Results for the linear regression are the orange and blue squares at 3 degrees of freedom."}
 # Training set
 train_obs1 <- gen_obs(d1, 5000)
 train_obs2 <- gen_obs(d2, 5000)
@@ -504,7 +509,7 @@ ggplot(results, aes(x = df)) +
 
 ## Statistical Decision Theory
 
-We now develop a framework to develop and evaluate models that were previously discussed. Let $X \in \mathbb{R}^p$ denote a real valued input vector, and $Y \in \mathbb{R}$ a real-valued random output variable, with joint distribution $Pr(X,Y)$. We seek a function $f(X)$ for predicting $Y$ given input $X$. As we desire models that are accurate, we need a loss function $L(Y, f(X))$ that penalizes errors in prediction. The most common loss function is the squared-error loss: $L(Y, f(X)) = (Y - f(X))^2$. This gives us a criterion to select $f$
+We now develop a framework to evaluate the models discussed previously. Let $X \in \mathbb{R}^p$ denote a real-valued input vector, and $Y \in \mathbb{R}$ a real-valued random output variable, with joint distribution $\Pr(X,Y)$. We seek a function $f(X)$ for predicting $Y$ given input $X$. As we desire accurate models, we need a loss function $L(Y, f(X))$ that penalizes errors in prediction. The most common choice is the squared-error loss $L(Y, f(X)) = (Y - f(X))^2$, which gives us a criterion to select $f$.
 
 ### Regression Function
 
@@ -513,8 +518,8 @@ Given the squared error loss function, we now define the expected prediction err
 $$
 \begin{equation}
 \begin{split}
-\text{EPE}(f) &= \text{E}[(Y-f(X))^2] \\
-       &= \int (y-f(x))^2\text{Pr}(dx,dy)
+\text{EPE}(f) &= \mathbb{E}[(Y-f(X))^2] \\
+       &= \int (y-f(x))^2\Pr(dx,dy)
 \end{split}
 \end{equation}
 $$
@@ -524,10 +529,10 @@ By conditioning on $X$, we can write $\text{EPE}$ as:
 $$
 \begin{equation}
 \begin{split}
-\text{EPE}(f) &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\text{Pr}(X=x, Y=y)\;dx\;dy \\
-              &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;\text{Pr}(X=x)\;dx\;dy \\
-              &= \int_{x\in X}\int_{y\in Y} ((y-f(x))^2\;\text{Pr}(Y=y|\;X=x)\;dy)\ \;\text{Pr}(X=x)\;dx \\
-              &= \text{E}_X\text{E}_{Y|X}[(Y - f(X))^2 | X]
+\text{EPE}(f) &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\Pr(X=x, Y=y)\;dx\;dy \\
+              &= \int_{y\in Y}\int_{x\in X} (y-f(x))^2\;\Pr(Y=y\mid X=x)\;\Pr(X=x)\;dx\;dy \\
+              &= \int_{x\in X}\left(\int_{y\in Y} (y-f(x))^2\;\Pr(Y=y\mid X=x)\;dy\right)\Pr(X=x)\;dx \\
+              &= \mathbb{E}_X\,\mathbb{E}_{Y\mid X}[(Y - f(X))^2 \mid X]
 \end{split}
 \end{equation}
 $$
@@ -536,38 +541,20 @@ We note that $\text{EPE}$ is an integral of the form:
 
 $$
 \begin{equation}
-EPE(f) = \int_{x\in X} E[(Y-f(x))^2|x]\; dx
+\text{EPE}(f) = \int_{x\in X} \mathbb{E}[(Y-f(x))^2\mid x]\; dx
 \end{equation}
 $$
 
-Given that the integral is always non-negative and $f(x)$ can be chosen independently for each $x$, minimizing each integrand is equivalent to minimize the integral. Therefore, we solve the simpler problem instead: At each point $x$, we seek to find a constant $c^*$ that minimize $E_{Y|X}[(Y-c)^2|X=x]$. In other words, it suffices to minimize $\text{EPE}$ pointwise:
+Since the integrand is always non-negative and $f(x)$ can be chosen independently for each $x$, minimizing each integrand is equivalent to minimizing the integral. We therefore solve the simpler problem: at each point $x$, find a constant $c$ that minimizes $\mathbb{E}_{Y\mid X}[(Y-c)^2\mid X=x]$. In other words, it suffices to minimize $\text{EPE}$ pointwise.
 
 <details>
-<summary>Remark on justification of minimization.</summary>
-::: {.remark}
-Given a measure space $(S, \mathcal{F}, \mu)$, let $\mathcal{F}$ be a space of measurable functions $f: S \rightarrow \mathcal{X}$ and let $F: \mathcal{F} \rightarrow \mathbb{R}$ be a functional of the form:
-$$
-\begin{equation}
-F(f) = \int_{S} g(f(s),s) \, \mu(ds)
-\end{equation}
-$$
-for some measurable $g: \mathcal{X} \times S \rightarrow \mathbb{R}$ and positive measure $\mu$ on $S$
+<summary>Lemma: pointwise minimization of an integral functional.</summary>
 
-A global minimization problem is
-$$
-\begin{equation}
-f^* = \operatorname*{argmin}_{f\in\mathcal{F}} F(f)
-\end{equation}
-$$
+::: {.lemma #lem-pointwise}
+Let $(S, \mathcal{A}, \mu)$ be a measure space with $\mu$ a positive measure, let $\mathcal{H}$ be a space of measurable functions $f: S \rightarrow \mathcal{X}$, and let $F: \mathcal{H} \rightarrow \mathbb{R}$ be the functional $F(f) = \int_{S} g(f(s),s) \, \mu(ds)$ for some measurable $g: \mathcal{X} \times S \rightarrow \mathbb{R}$. If the pointwise minimizer $f^*(s) = \operatorname*{argmin}_{c\in\mathcal{X}} g(c,s)$ is measurable, then $f^*$ globally minimizes $F$ over $\mathcal{H}$.
+:::
 
-The functional $F$ admits pointwise minimization if the global problem reduces to the family of scalar problems
-$$
-\begin{equation}
-f^*(s) = \operatorname*{argmin}_{c\in\mathcal{X}} g(c,s)
-\end{equation}
-$$
-
-For any $f$, $g(f(s), s) \geq g(f^*(s), s)$ by definition of $f^*$. Since $\mu$ is a positive measure, integration preserves inequality:
+*Proof.* For any $f \in \mathcal{H}$, $g(f(s), s) \geq g(f^*(s), s)$ for every $s$ by the definition of $f^*$. Since $\mu$ is a positive measure, integration preserves the inequality:
 
 $$
 \begin{equation}
@@ -575,19 +562,14 @@ F(f) = \int_{S} g(f(s),s) \, \mu(ds) \geq \int_{S} g(f^*(s),s) \, \mu(ds) = F(f^
 \end{equation}
 $$
 
-Therefore, $f^*$ is a global minimizer for all $f \in \mathcal{F}$.  
-
-This reduction is only valid if:
-
-1. The integrand at $s$ depends on $f$ only through $f(s)$
-2. $\mu$ is a positive measure, to guarantee the preservation of inequalities
-3. The pointwise minimizer $\operatorname*{argmin}_{c} g(c,s)$ is itself measurable, hence $f^* \in \mathcal{F}$
-
-:::
+Hence $f^*$ is a global minimizer. The reduction relies on three conditions: the integrand at $s$ depends on $f$ only through $f(s)$; $\mu$ is a positive measure, so integration preserves inequalities; and the pointwise minimizer is measurable, ensuring $f^* \in \mathcal{H}$. $\qquad\square$
 </details>
+
+Applying Lemma \@ref(lem:lem-pointwise) with $g(c,x) = \mathbb{E}_{Y\mid X}[(Y-c)^2\mid X=x]$,
+
 $$
 \begin{equation}
-f(x) = \operatorname*{argmin}_c \text{E}_{Y|X}[(Y-c)^2\mid X=x]
+f(x) = \operatorname*{argmin}_c \mathbb{E}_{Y\mid X}[(Y-c)^2\mid X=x]
 \end{equation}
 $$
 
@@ -596,9 +578,9 @@ To solve this optimization problem, we first expand the inner term:
 $$
 \begin{equation}
 \begin{split}
-f(x) &= \operatorname*{argmin}_c \text{E}_{Y|X}[Y^2 - 2Yc + c^2\mid X=x] \\
-     &= \operatorname*{argmin}_c \bigl(\text{E}_{Y|X}[Y^2\mid X=x] - 2c\text{E}_{Y|X}[Y\mid X=x] + c^2\bigr) \\
-     &= \operatorname*{argmin}_c \bigl(c^2 - 2c\text{E}_{Y|X}[Y\mid X=x] + \text{E}_{Y|X}[Y^2\mid X=x]\bigr)
+f(x) &= \operatorname*{argmin}_c \mathbb{E}_{Y\mid X}[Y^2 - 2Yc + c^2\mid X=x] \\
+     &= \operatorname*{argmin}_c \bigl(\mathbb{E}_{Y\mid X}[Y^2\mid X=x] - 2c\,\mathbb{E}_{Y\mid X}[Y\mid X=x] + c^2\bigr) \\
+     &= \operatorname*{argmin}_c \bigl(c^2 - 2c\,\mathbb{E}_{Y\mid X}[Y\mid X=x] + \mathbb{E}_{Y\mid X}[Y^2\mid X=x]\bigr)
 \end{split}
 \end{equation}
 $$
@@ -608,27 +590,27 @@ We take the derivative of the RHS with respect to $c$ and set it to $0$:
 $$
 \begin{equation}
 \begin{split}
-2c - 2\text{E}_{Y|X}[Y|X=x] &= 0 \\
-c = \text{E}_{Y|X}[Y|X=x]
+2c - 2\mathbb{E}_{Y\mid X}[Y\mid X=x] &= 0 \\
+c &= \mathbb{E}_{Y\mid X}[Y\mid X=x]
 \end{split}
 \end{equation}
 $$
 
-Hence, the solution to the optimization problem is the conditional expectation (regression function):
+Hence the solution to the optimization problem is the conditional expectation (regression function):
 
 $$
 \begin{equation}
-f(x) = \text{E}_{Y|X}[Y|X=x]
+f(x) = \mathbb{E}_{Y\mid X}[Y\mid X=x]
 \end{equation}
 $$
 
 ### Optimal Function of Nearest-Neighbor Method
 
-For a fixed query point $x$, the k-NN estimator replaces the population objective $\text{E}[(Y-c)^2 \mid X = x]$ with its empirical analog over the neighborhood $N_k(x)$:
+For a fixed query point $x$, the $k$-NN estimator replaces the population objective $\mathbb{E}[(Y-c)^2 \mid X = x]$ with its empirical analog over the neighborhood $N_k(x)$:
 
 $$
 \begin{equation}
-\hat{c} = \text{argmin}_c \sum_{x_i \in N_k(x)} (y_i - c)^2
+\hat{c} = \operatorname*{argmin}_c \sum_{x_i \in N_k(x)} (y_i - c)^2
 \end{equation}
 $$
 
@@ -639,12 +621,12 @@ $$
 \begin{split}
 \frac{d}{dc}\sum_{x_i \in N_k(x)}(y_i - c)^2 &= -2\sum_{x_i \in N_k(x)}(y_i - c) = 0 \\
 \sum_{x_i \in N_k(x)} y_i &= \sum_{x_i \in N_k(x)} c \\
-\hat{c} &= \frac{1}{k}\sum_{x_i \in N_k(x)} y_i = \text{Ave}(y_i \mid x_i \in N_k(x))
+\hat{c} &= \frac{1}{k}\sum_{x_i \in N_k(x)} y_i = \operatorname{Ave}(y_i \mid x_i \in N_k(x))
 \end{split}
 \end{equation}
 $$
 
-The population conditional expectation $\text{E}(Y \mid X = x)$ is approximated in two steps: the sample average estimates $\text{E}(Y \mid X \in N_k(x))$ by the law of large numbers as $k \to \infty$, and $\text{E}(Y \mid X \in N_k(x)) \to \text{E}(Y \mid X = x)$ as the neighborhood shrinks when $k/N \to 0$.
+The population conditional expectation $\mathbb{E}[Y \mid X = x]$ is approximated in two steps: the sample average estimates $\mathbb{E}[Y \mid X \in N_k(x)]$ by the law of large numbers as $k \to \infty$, and $\mathbb{E}[Y \mid X \in N_k(x)] \to \mathbb{E}[Y \mid X = x]$ as the neighborhood shrinks when $k/N \to 0$.
 
 ### Optimal Function of Linear Model
 
@@ -655,113 +637,101 @@ $$
 f(x) \approx x^{T}\beta
 \end{equation}
 $$
-We plug this linear model into $\text{EPE}$,
+
+we plug this linear model into the $\text{EPE}$:
+
+$$
+\begin{equation}
+\text{EPE}(f) = \mathbb{E}[(Y-f(X))^2] = \mathbb{E}[(Y-X^T\beta)^2]
+\end{equation}
+$$
+
+Differentiating with respect to $\beta$ and interchanging the derivative and the integral (justified in the appendix to this chapter),
 
 $$
 \begin{equation}
 \begin{split}
-\text{EPE}(f) &= \text{E}[(Y-f(X))^2] \\
-              &= \text{E}[(Y-x^T\beta)^2] \\
-              &= \text{E}[Y^2 + (x^T\beta)^2 -2x^TY\beta]
+\frac{\partial\text{EPE}(f)}{\partial \beta} &= \mathbb{E}\!\left[\frac{\partial}{\partial\beta}(Y-X^T\beta)^2\right] \\
+                                             &= \mathbb{E}[2(Y-X^T\beta)(-X)] \\
+                                             &= -2\bigl(\mathbb{E}[XY] - \mathbb{E}[XX^T]\beta\bigr)
 \end{split}
 \end{equation}
 $$
 
-We now differentiate in terms of $\beta$ (See the appendix for this chapter for the justification of the interchangeability of the derivative and integral sign),
+where the inner derivative uses the chain rule together with $\frac{\partial}{\partial\beta}(X^T\beta) = X$. Setting the gradient to zero,
 
 $$
 \begin{equation}
 \begin{split}
-\frac{\partial\text{EPE}(f)}{\partial \beta} &= \frac{\partial}{\partial\beta}\int (Y^2 + (x^T\beta)^2 -2x^TY\beta)\;\text{Pr}(dx,dy) \\
-                                             &= \int\frac{\partial}{\partial\beta}(Y^2 + \beta^Txx^T\beta - 2x^TY\beta)\;\text{Pr}(dx,dy)
+\mathbb{E}[XX^T]\beta &= \mathbb{E}[XY] \\
+\beta &= (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY]
 \end{split}
-\end{equation}
-$$
-
-By linearity of the integrals and derivatives,
-
-$$
-\begin{equation}
-\begin{split}
-\frac{\partial\text{EPE}(f)}{\partial \beta} &= \int\frac{\partial}{\partial\beta}Y^2 + \int\frac{\partial}{\partial\beta}\beta^Txx^T\beta - \int\frac{\partial}{\partial\beta}(2x^TY\beta) \\
-                                             &= 0 + \int2xx^T\beta - \int\frac{\partial}{\partial\beta}2Yx^T\beta \quad (\text{Using the identity:}\;\frac{\partial}{\partial\beta}\beta^Txx^T\beta = 2xx^T\beta)\\
-                                             &= 2\beta\int xx^T - 2\int\frac{\partial}{\partial\beta} Y\beta^Tx \quad \text{(Dot product is commutative)} \\
-                                             &= 2\beta\text{E}[XX^T] - 2\text{E}[YX] \quad (\frac{\partial}{\partial\beta}\beta^Tx = \frac{\partial}{\partial\beta_i}\sum\beta_ix_i = \sum x_i)
-\end{split}
-\end{equation}
-$$
-
-Setting $\frac{\partial\text{EPE}(f)}{\partial \beta} = 0$ to find the optimal value,
-
-$$
-\begin{equation}
-\begin{split}
-2\beta\text{E}[XX^T] &= 2\text{E}[XY] \\
-\beta &= (\text{E}[XX^T])^{-1}\text{E[XY]}
-\end{split}
-\end{equation}
 (\#eq:linearoptimal)
+\end{equation}
 $$
 
-We have that the least square solution approximates the theoretical $\beta$ value when $n$ is large:
+The least-squares solution approximates this theoretical $\beta$ when $N$ is large:
 
 $$
-\hat{\beta} = (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y} \xrightarrow{N\;\rightarrow\;\infty} (\text{E}[XX^T])^{-1}\text{E[XY]} = \beta
+\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} \xrightarrow{N\;\rightarrow\;\infty} (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY] = \beta
 $$
 
 <details>
-<summary> Remark on the limit of the least square solution </summary>
-:::{.remark}
-First, we observe that $\textbf{X}$ is a $N \times p$ matrix, where $N$ is the number of input. Since each row is a data sample, we can rewrite the matrix as:
+<summary>Proposition: limit of the least-squares solution.</summary>
 
+::: {.proposition #prp-lse-limit}
+Under the linear model, the least-squares estimator converges to the population optimum \@ref(eq:linearoptimal) as the sample size grows:
 $$
-\textbf{X} =  \begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
+\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} \xrightarrow{N\to\infty} (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY] = \beta
 $$
-
-We can now rewrite $\textbf{X}^T\textbf{X}$ Eqn \@ref(eq:normsol) as:
-
-$$
-\begin{equation}
-\begin{split}
-\textbf{X}^T\textbf{X} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_n \end{bmatrix}\begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
-                      &= \sum_{i=1}^{N} x_ix^T_i \\
-                      &\approx N\text{E}[XX^T]
-\end{split}
-\end{equation}
-$$
-
-Next, we observe that $\textbf{y}$ is a $N$-vector of constants:
-
-$$
-\begin{equation}
-\begin{split}
-\textbf{X}^T\textbf{y} = \begin{bmatrix} x_1 \; x_2 \; ... \; x_N \end{bmatrix}\begin{bmatrix}y_1\\y_2\\\vdots\\y_N\end{bmatrix}
-                       &= \sum_{i=1}^{N} x_iy_i \\
-                       &\approx N\text{E}[XY]
-\end{split}
-\end{equation}
-$$
-
-Hence,
-
-$$
-\begin{equation}
-\begin{split}
-\hat{\beta} &= (\textbf{X}^T\textbf{X})^{-1}\textbf{X}^T\textbf{y} \\
-           &\approx (N\text{E}[XX^T])^{-1}N \text{E}[XY] \\
-           &\xrightarrow{N\;\rightarrow\;\infty} \frac{1}{N}(\text{E}[XX^T])^{-1}N\text{E}[XY] \\
-           &= \text{E}[XX^T])^{-1}\text{E}[XY] \\
-           &= \beta
-\end{split}
-\end{equation}
-$$
-Thus, we have shown that the least square solution approaches the theoretical $\beta$ as $n$ gets larger.
 :::
+
+*Proof.* Since $\mathbf{X}$ is the $N \times p$ matrix whose $i$th row is the observation $x_i^T$,
+
+$$
+\mathbf{X} =  \begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
+$$
+
+By the law of large numbers applied to the i.i.d. observations,
+
+$$
+\begin{equation}
+\begin{split}
+\mathbf{X}^T\mathbf{X} = \begin{bmatrix} x_1 & x_2 & \ldots & x_N \end{bmatrix}\begin{bmatrix}x_1^T\\x_2^T\\\vdots\\x_N^T\end{bmatrix}
+                      &= \sum_{i=1}^{N} x_ix^T_i \approx N\,\mathbb{E}[XX^T]
+\end{split}
+\end{equation}
+$$
+
+and similarly, with $\mathbf{y}$ the $N$-vector of outputs,
+
+$$
+\begin{equation}
+\begin{split}
+\mathbf{X}^T\mathbf{y} = \begin{bmatrix} x_1 & x_2 & \ldots & x_N \end{bmatrix}\begin{bmatrix}y_1\\y_2\\\vdots\\y_N\end{bmatrix}
+                       &= \sum_{i=1}^{N} x_iy_i \approx N\,\mathbb{E}[XY]
+\end{split}
+\end{equation}
+$$
+
+Substituting both approximations, the factors of $N$ cancel:
+
+$$
+\begin{equation}
+\begin{split}
+\hat{\beta} &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} \\
+           &\approx (N\,\mathbb{E}[XX^T])^{-1}(N\,\mathbb{E}[XY]) \\
+           &= (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY] = \beta
+\end{split}
+\end{equation}
+$$
+
+Thus the least-squares solution approaches the theoretical $\beta$ as $N$ grows. $\qquad\square$
 </details>
 
-### L1 loss function
+### $L^1$ Loss
 
-We want to show that given $L^1$ loss, the $\text{EPE}(f)$ is minimized by $f(x) = \text{median}(Y \mid X = x)$. We first have that the median for any distribution is:
+We show that under $L^1$ loss, $\text{EPE}(f)$ is minimized by $f(x) = \operatorname{median}(Y \mid X = x)$. We first recall that the median of any distribution is
 
 $$
 \begin{equation}
@@ -775,26 +745,26 @@ We show that the median $c^*$ satisfies both:
 
 $$
 \begin{equation}
-\text{(i)}\ P(X \leq c^*) \geq \frac{1}{2} \qquad \text{and} \qquad \text{(ii)}\ P(X \geq c^*) \geq \frac{1}{2}
+\text{(i)}\ \Pr(X \leq c^*) \geq \frac{1}{2} \qquad \text{and} \qquad \text{(ii)}\ \Pr(X \geq c^*) \geq \frac{1}{2}
 \end{equation}
 $$
 
 
-To establish (i), take a sequence $\{t_n\}$ with $t_n \downarrow c^*$. Since each $t_n > c^* = \inf\{t : F_X(t) \geq 1/2\}$, each $t_n$ belongs to $\{t : F_X(t) \geq 1/2\}$, so $F_X(t_n) \geq 1/2$ for every $n$. By right-continuity of $F_X$, we have $F_X(t_n) \to F_X(c^*)$ as $t_n \downarrow c^*$, and hence $F_X(c^*) \geq 1/2$ and $P(X \leq c^*) \geq 1/2$.
+To establish (i), take a sequence $\{t_n\}$ with $t_n \downarrow c^*$. Since each $t_n > c^* = \inf\{t : F_X(t) \geq 1/2\}$, each $t_n$ belongs to $\{t : F_X(t) \geq 1/2\}$, so $F_X(t_n) \geq 1/2$ for every $n$. By right-continuity of $F_X$, we have $F_X(t_n) \to F_X(c^*)$ as $t_n \downarrow c^*$, and hence $F_X(c^*) \geq 1/2$ and $\Pr(X \leq c^*) \geq 1/2$.
 
-To establish (ii), let $t < c^*$. By definition of the infimum, $t \notin \{s : F_X(s) \geq 1/2\}$, so $F_X(t) < 1/2$. Taking $t \uparrow c^*$, we obtain $F_X(c^{*-}) \leq 1/2$. Since $F_X(c^{*-}) = P(X < c^*)$, it follows that $P(X < c^*) \leq 1/2$, and therefore:
+To establish (ii), let $t < c^*$. By definition of the infimum, $t \notin \{s : F_X(s) \geq 1/2\}$, so $F_X(t) < 1/2$. Taking $t \uparrow c^*$, we obtain $F_X(c^{*-}) \leq 1/2$. Since $F_X(c^{*-}) = \Pr(X < c^*)$, it follows that $\Pr(X < c^*) \leq 1/2$, and therefore:
 
 $$
 \begin{equation}
-P(X \geq c^*) = 1 - P(X < c^*) \geq \frac{1}{2}
+\Pr(X \geq c^*) = 1 - \Pr(X < c^*) \geq \frac{1}{2}
 \end{equation}
 $$
 
-We now show that the median minimizes expected absolute deviation. Let $X$ be a real-valued random variable with $\text{E}[|X|] < \infty$, and let $c^*$ be its median. Then for every $c \in \mathbb{R}$:
+We now show that the median minimizes expected absolute deviation. Let $X$ be a real-valued random variable with $\mathbb{E}[|X|] < \infty$, and let $c^*$ be its median. Then for every $c \in \mathbb{R}$:
 
 $$
 \begin{equation}
-\text{E}[|X - c|] \geq \text{E}[|X - c^*|]
+\mathbb{E}[|X - c|] \geq \mathbb{E}[|X - c^*|]
 \end{equation}
 $$
 
@@ -838,7 +808,7 @@ Integrating over the partition:
 
 $$
 \begin{equation}
-\text{E}[|X - c|] - \text{E}[|X - c^*|] = \delta P(A) - \delta P(C) + \text{E}[(c + c^* - 2X)\mathbf{1}_B]
+\mathbb{E}[|X - c|] - \mathbb{E}[|X - c^*|] = \delta \Pr(A) - \delta \Pr(C) + \mathbb{E}[(c + c^* - 2X)\mathbf{1}_B]
 \end{equation}
 $$
 
@@ -846,19 +816,19 @@ We simplify the $B$-term by writing $c + c^* - 2X = 2(c - X) - \delta$:
 
 $$
 \begin{equation}
-\text{E}[(c + c^* - 2X)\mathbf{1}_B] = 2\,\text{E}[(c - X)\mathbf{1}_B] - \delta P(B)
+\mathbb{E}[(c + c^* - 2X)\mathbf{1}_B] = 2\,\mathbb{E}[(c - X)\mathbf{1}_B] - \delta \Pr(B)
 \end{equation}
 $$
 
-Substituting back and using $P(A) + P(B) + P(C) = 1$ to write $P(A) - P(C) - P(B) = 2P(A) - 1$:
+Substituting back and using $\Pr(A) + \Pr(B) + \Pr(C) = 1$ to write $\Pr(A) - \Pr(C) - \Pr(B) = 2\Pr(A) - 1$:
 
 $$
 \begin{equation}
-\text{E}[|X - c|] - \text{E}[|X - c^*|] = \delta\bigl(2P(X \leq c^*) - 1\bigr) + 2\,\text{E}[(c - X)\mathbf{1}_B]
+\mathbb{E}[|X - c|] - \mathbb{E}[|X - c^*|] = \delta\bigl(2\Pr(X \leq c^*) - 1\bigr) + 2\,\mathbb{E}[(c - X)\mathbf{1}_B]
 \end{equation}
 $$
 
-The first term is non-negative since $\delta > 0$ and $P(X \leq c^*) \geq 1/2$ by (i). The second term is non-negative since on $B$ we have $X \leq c$, hence $c - X \geq 0$. Consequently $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for $c > c^*$.
+The first term is non-negative since $\delta > 0$ and $\Pr(X \leq c^*) \geq 1/2$ by (i). The second term is non-negative since on $B$ we have $X \leq c$, hence $c - X \geq 0$. Consequently $\mathbb{E}[|X - c|] \geq \mathbb{E}[|X - c^*|]$ for $c > c^*$.
 
 (iii) Suppose that $c < c^*$, and let $\delta = c^* - c > 0$. We partition the real line into:
 
@@ -897,23 +867,23 @@ Integrating and simplifying the $B'$-term by writing $2X - c - c^* = 2(X - c) - 
 $$
 \begin{equation}
 \begin{split}
-\text{E}[|X - c|] - \text{E}[|X - c^*|] &= -\delta P(A') + \delta P(C') + 2\,\text{E}[(X-c)\mathbf{1}_{B'}] - \delta P(B') \\
-&= \delta\bigl(2P(X \geq c^*) - 1\bigr) + 2\,\text{E}[(X - c)\mathbf{1}_{B'}]
+\mathbb{E}[|X - c|] - \mathbb{E}[|X - c^*|] &= -\delta \Pr(A') + \delta \Pr(C') + 2\,\mathbb{E}[(X-c)\mathbf{1}_{B'}] - \delta \Pr(B') \\
+&= \delta\bigl(2\Pr(X \geq c^*) - 1\bigr) + 2\,\mathbb{E}[(X - c)\mathbf{1}_{B'}]
 \end{split}
 \end{equation}
 $$
 
-where we used $P(C') - P(A') - P(B') = 2P(C') - 1$. The first term is non-negative by (ii), and the second is non-negative since $X \geq c$ on $B'$. Hence $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for $c < c^*$.
+where we used $\Pr(C') - \Pr(A') - \Pr(B') = 2\Pr(C') - 1$. The first term is non-negative by (ii), and the second is non-negative since $X \geq c$ on $B'$. Hence $\mathbb{E}[|X - c|] \geq \mathbb{E}[|X - c^*|]$ for $c < c^*$.
 
 In all three cases the inequality holds.
 
-Therefore under $L^1$ loss, the function $f^*(x) = \text{median}(Y \mid X = x)$ minimizes the expected prediction error $\text{EPE}(f) = \text{E}[|Y - f(X)|]$
+Therefore under $L^1$ loss, the function $f^*(x) = \operatorname{median}(Y \mid X = x)$ minimizes the expected prediction error $\text{EPE}(f) = \mathbb{E}[|Y - f(X)|]$.
 
-Given $\text{EPE}(f) = \text{E}[|Y - f(X)|]$, we condition on $X$ and minimize pointwise:
+Given $\text{EPE}(f) = \mathbb{E}[|Y - f(X)|]$, we condition on $X$ and minimize pointwise:
 
 $$
 \begin{equation}
-\text{E}[|Y - f(X)|] = \text{E}_X\,\text{E}_{Y|X}[|Y - c| \mid X = x], \qquad c = f(x)
+\mathbb{E}[|Y - f(X)|] = \mathbb{E}_X\,\mathbb{E}_{Y\mid X}[|Y - c| \mid X = x] \qquad c = f(x)
 \end{equation}
 $$
 
@@ -921,104 +891,103 @@ Hence:
 
 $$
 \begin{equation}
-f(x) = \operatorname*{argmin}_c\, \text{E}_{Y|X}[|Y - c| \mid X = x]
+f(x) = \operatorname*{argmin}_c\, \mathbb{E}_{Y\mid X}[|Y - c| \mid X = x]
 \end{equation}
 $$
 
-As we have established $\text{E}[|X - c|] \geq \text{E}[|X - c^*|]$ for every $c \in \mathbb{R}$, the constant $c^*$ is the global minimizer. Hence $f(x) = \text{median}(Y \mid X = x)$ is the solution.
+As we have established $\mathbb{E}[|X - c|] \geq \mathbb{E}[|X - c^*|]$ for every $c \in \mathbb{R}$, the constant $c^*$ is the global minimizer. Hence $f(x) = \operatorname{median}(Y \mid X = x)$ is the solution.
 
 ### Optimal Function of Categorical Variable
 
-Suppose that the output is a categorical variable $G$, a different loss function is needed. Let $\hat{G}$ be an estimate of values in $\mathcal{G}$, the set of all possible classes. Our loss function can be represented as a $K \times K$ matrix $\textbf{L}$, where $K = \text{card}(\mathcal{G})$. $\textbf{L}$ will be zero on the diagonal and nonnegative elsewhere, where $L(k, \ell)$ is the loss for classifying an observation belonging to $\mathcal{G}_k$ as $\mathcal{G}_\ell$, i.e.
+When the output is a categorical variable $G$, a different loss function is needed. Let $\hat{G}$ be an estimate taking values in $\mathcal{G}$, the set of all possible classes. Our loss function can be represented as a $K \times K$ matrix $\mathbf{L}$, where $K = \text{card}(\mathcal{G})$. $\mathbf{L}$ will be zero on the diagonal and nonnegative elsewhere, where $L(k, \ell)$ is the loss for classifying an observation belonging to $\mathcal{G}_k$ as $\mathcal{G}_\ell$, i.e.
 
 $$
 \begin{equation}
-\textbf{L} = \begin{bmatrix}
-              0 & L(\mathcal{G}_1, \mathcal{G}_2) & L(\mathcal{G}_1, \mathcal{G}_3) & \dots  & L(\mathcal{G}_1, \mathcal{G}_K) \\
-              L(\mathcal{G}_2, \mathcal{G}_1) & 0 & L(\mathcal{G}_2, \mathcal{G}_3) & \dots  & L(\mathcal{G}_2, \mathcal{G}_K) \\
+\mathbf{L} = \begin{bmatrix}
+              0 & L(\mathcal{G}_1, \mathcal{G}_2) & L(\mathcal{G}_1, \mathcal{G}_3) & \ldots  &L(\mathcal{G}_1, \mathcal{G}_K) \\
+              L(\mathcal{G}_2, \mathcal{G}_1) & 0 & L(\mathcal{G}_2, \mathcal{G}_3) & \ldots  &L(\mathcal{G}_2, \mathcal{G}_K) \\
               \vdots & \vdots & \vdots & \ddots & \vdots \\
-              L(\mathcal{G}_K, \mathcal{G}_1) & L(\mathcal{G}_K, \mathcal{G}_2) & L(\mathcal{G}_K, \mathcal{G}_3) & \dots  & 0
+              L(\mathcal{G}_K, \mathcal{G}_1) & L(\mathcal{G}_K, \mathcal{G}_2) & L(\mathcal{G}_K, \mathcal{G}_3) & \ldots  &0
 \end{bmatrix}
 (\#eq:Lmatrix)
 \end{equation}
 $$
 
-We use the zero-one function, where misclassifications are penalized by a single unit, such that:
+We use the zero-one loss, where every misclassification is penalized by a single unit:
 
 $$
 L(k, \ell) =
 \begin{cases}
-0, \text{if} \; k=\ell \\
-1, \text{if} \; k \neq \ell
+0 & \text{if } k=\ell \\
+1 & \text{if } k \neq \ell
 \end{cases}
 $$
 
-w.r.t. the joint distribution $\text{Pr}(G, X)$, we have that the $\text{EPE}$ is:
+With respect to the joint distribution $\Pr(G, X)$, the expected prediction error is
 
 $$
-\text{EPE} = \text{E}[L(G, \hat{G}(X))]
+\text{EPE} = \mathbb{E}[L(G, \hat{G}(X))]
 $$
 
-We condition and write $\text{EPE}$ as:
+Conditioning on $X$, we write the $\text{EPE}$ as
 
 $$
 \begin{equation}
 \begin{split}
-\text{EPE} &= \text{E}_x[\text{E}_{G|X}[L(G,\hat{G}(X)|X)]] \\
-           &=\text{E}_x[\sum^{K}_{k=1}L(\mathcal{G}_k, \hat{G}(X)\text{P}(\mathcal{G}|X)]
+\text{EPE} &= \mathbb{E}_X\,\mathbb{E}_{G\mid X}[L(G,\hat{G}(X)) \mid X] \\
+           &= \mathbb{E}_X\!\left[\sum_{k=1}^{K} L(\mathcal{G}_k, \hat{G}(X))\,\Pr(\mathcal{G}_k \mid X)\right]
 \end{split}
 \end{equation}
 $$
 
-Minimizing pointwise we get:
+Minimizing pointwise,
 
 $$
-\hat{G}(x)  =\operatorname*{argmin}_{g\in \mathcal{G}} \sum^{K}L(G=\mathcal{G}_k, \hat{G}(x) = g)\;\text{P}(\mathcal{G}_k|X=x)
+\hat{G}(x) = \operatorname*{argmin}_{g\in \mathcal{G}} \sum_{k=1}^{K} L(\mathcal{G}_k, g)\;\Pr(\mathcal{G}_k \mid X=x)
 $$
 
-Simplifying the loss function:
+Under zero-one loss the summand simplifies, since
 
 $$
 \begin{equation}
-L(G = \mathcal{G}_k, \hat{G}(x) = g) =
+L(\mathcal{G}_k, g) =
 \begin{cases}
-L(g,g) = 0, \text{when}\;\mathcal{G}_k =  g\\
-L(\mathcal{G}_k, g) = 1 , \text{when} \; \mathcal{G}_k \neq g
+0 & \text{if } \mathcal{G}_k = g \\
+1 & \text{if } \mathcal{G}_k \neq g
 \end{cases}
 \end{equation}
 $$
 
-Thus, the solution to our minimizer can be simplified into:
+so only the terms with $\mathcal{G}_k \neq g$ survive:
 
 $$
-\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} 1\cdot \text{P}(\mathcal{G}_k|X=x)
+\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum_{k:\mathcal{G}_k \neq g} \Pr(\mathcal{G}_k \mid X=x)
 $$
 
-As $\text{P}(\mathcal{G}_k|X=x)$ must sum to 1 and that the set $\mathcal{G}$ only consists of elements that is $g$ or not $g$, we have that:
+Since $\Pr(\mathcal{G}_k \mid X=x)$ sums to one over $k$, and each class either equals $g$ or does not,
 
 $$
 \begin{equation}
 \begin{split}
-\sum^K_{k=1}  \text{P}(\mathcal{G}_k|X=x) &= 1 \\
-\sum_{k:\mathcal{G}_k = g}  \text{P}(\mathcal{G}_k|X=x) &+ \sum_{k:\mathcal{G}_k \neq g}  \text{P}(\mathcal{G}_k|X=x) = 1 \\
-\text{P}(\mathcal{G}_k = g|X=x) &+ \sum_{k:\mathcal{G}_k \neq g}  \text{P}(\mathcal{G}_k|X=x) = 1 \\
-\sum_{k:\mathcal{G}_k \neq g}\text{P}(\mathcal{G}_k|X=x) &= 1 - \text{P}(\mathcal{G}_k = g|X=x)
+\sum_{k=1}^{K}  \Pr(\mathcal{G}_k \mid X=x) &= 1 \\
+\Pr(g \mid X=x) + \sum_{k:\mathcal{G}_k \neq g}  \Pr(\mathcal{G}_k \mid X=x) &= 1 \\
+\sum_{k:\mathcal{G}_k \neq g}\Pr(\mathcal{G}_k \mid X=x) &= 1 - \Pr(g \mid X=x)
 \end{split}
 \end{equation}
 $$
 
-Thus our minimizer is simplified into:
+Substituting, the minimizer becomes
 
 $$
 \begin{equation}
 \begin{split}
-\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum^K_{k:\mathcal{G}_k \neq g} \text{P}(\mathcal{G}_k|X=x) &= \operatorname*{argmin}_{g\in\mathcal{G}}(1-\text{P}(g|X=x)) \\ &= \operatorname*{argmax}_{g\in\mathcal{G}} \text{P}(g|X=x)
+\hat{G}(x) = \operatorname*{argmin}_{g\in\mathcal{G}} \sum_{k:\mathcal{G}_k \neq g} \Pr(\mathcal{G}_k \mid X=x) &= \operatorname*{argmin}_{g\in\mathcal{G}}\bigl(1-\Pr(g \mid X=x)\bigr) \\ &= \operatorname*{argmax}_{g\in\mathcal{G}} \Pr(g \mid X=x)
 \end{split}
 (\#eq:Bclass)
 \end{equation}
 $$
 
-The solution is known as a $\textit{Bayes classifier}$, and implies that the best solution is found when we classify to the most probable class, using the conditional (discrete) distribution of $P(G|X)$.
+The solution is known as a *Bayes classifier*: it classifies each point to the most probable class under the conditional distribution $\Pr(G \mid X)$.
 
 ```{r bayes, warning=FALSE, fig.cap="Optimal Bayes decision boundary"}
 compute_mixture_density <- function(x, centers, var) {
@@ -1061,15 +1030,15 @@ ggplot() +
   coord_fixed(ratio = 0.75)
 ```
 
-$k$-nearest neighbor approximates the Bayesian solution - except that conditional probability at a point is relaxed to conditional probability within a neighborhood of a point.
+$k$-nearest neighbor approximates the Bayes solution — except that the conditional probability at a point is relaxed to the conditional probability within a neighborhood of that point.
 
 ## Local Methods in High Dimensions
 
-### Neighborhood in n-dimensional volume
+### Neighborhoods in $n$-Dimensional Volume
 
 Our intuition suggests that, given a sufficiently large training set, we could always approximate the theoretically optimal conditional expectation through $k$-nearest neighbor averaging — since we should be able to find a large neighborhood of observations close to $x$ and average over them. This intuition, however, breaks down in high dimensions.
 
-Consider the $p$-dimensional unit hypercube. Suppose we send out a hypercubial neighborhood around a target point to capture a fraction $r$ of the observations, and since this corresponds to a fraction $r$ of the unit volume, we have that the expected edge length will be $e_p(r) = r^{\frac{1}{p}}$. As the dimensions of the dataset increase, the expected edge length increase such that the neighborhood can no longer be considered "local". Reducing $r$ does not help, since the fewer observations we average, the higher the variance becomes.
+Consider the $p$-dimensional unit hypercube. Suppose we grow a hypercubical neighborhood around a target point to capture a fraction $r$ of the observations. Since this corresponds to a fraction $r$ of the unit volume, the expected edge length is $e_p(r) = r^{1/p}$. As the dimension increases, the expected edge length grows, so the neighborhood can no longer be considered "local". Reducing $r$ does not help, since the fewer observations we average, the higher the variance becomes.
 
 ```{r volume, warning=FALSE, fig.cap="Curse of dimensionality illustrated. 80% of the range of each coordinate will be needed to capture 10% of the data in a 10-dimensional hypercube."}
 r <- seq(0, 0.65, length.out = 500)
@@ -1128,8 +1097,7 @@ J_p := \left|\det D\Phi_p\right| = r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k
 $$
 :::
 
-::: {.proof}
-The proof is by induction on $p$. The coordinate formulas satisfy the recursion
+*Proof.* The proof is by induction on $p$. The coordinate formulas satisfy the recursion
 
 $$
 \begin{equation}
@@ -1207,8 +1175,7 @@ $$
 J_p = r\sin^{p-2}\theta_1\cdot r^{p-2}\prod_{k=1}^{p-3}\sin^{p-2-k}\theta_{k+1} = r^{p-1}\sin^{p-2}\theta_1\prod_{m=2}^{p-2}\sin^{p-1-m}\theta_m = r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k
 $$
 
-where the $k=1$ term of the final product recovers $\sin^{p-2}\theta_1$, completing the induction. $\square$
-:::
+where the $k=1$ term of the final product recovers $\sin^{p-2}\theta_1$, completing the induction. $\qquad\square$
 
 ---
 
@@ -1223,8 +1190,7 @@ V_p(R) = \frac{\pi^{p/2}}{\Gamma\!\left(\frac{p}{2}+1\right)}R^p
 $$
 :::
 
-:::{.proof}
-By the Lemma, the volume element is $r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k\,dr\,d\theta_1\cdots d\theta_{p-1}$. Since the integrand separates over independent variables,
+*Proof.* By the Lemma, the volume element is $r^{p-1}\prod_{k=1}^{p-2}\sin^{p-1-k}\theta_k\,dr\,d\theta_1\cdots d\theta_{p-1}$. Since the integrand separates over independent variables,
 
 $$
 \begin{equation}
@@ -1348,32 +1314,28 @@ Applying $\Gamma\!\bigl(\tfrac{p}{2}+1\bigr) = \tfrac{p}{2}\,\Gamma\!\bigl(\tfra
 $$
 V_p(R) = \frac{2\pi^{p/2}R^p}{2\,\Gamma\!\left(\tfrac{p}{2}+1\right)} = \frac{\pi^{p/2}}{\Gamma\!\left(\tfrac{p}{2}+1\right)}R^p \qquad\square
 $$
-:::
 
 ---
 
-::: {.proof}
-Since $X_1$ is uniformly distributed on $\mathbb{B}^p$, the probability that $X_1$ lies within distance $m$ of the origin is the ratio of volumes. By the Proposition, the normalization constants cancel:
+*Proof.* Since $X_1$ is uniformly distributed on $\mathbb{B}^p$, the probability that $X_1$ lies within distance $m$ of the origin is the ratio of volumes. By the Proposition, the normalization constants cancel:
 
 $$
-P(\|X_1\|\leq m) = \frac{V_p(m)}{V_p(1)} = \frac{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}\,m^p}{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}} = m^p
+\Pr(\|X_1\|\leq m) = \frac{V_p(m)}{V_p(1)} = \frac{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}\,m^p}{\dfrac{\pi^{p/2}}{\Gamma(p/2+1)}} = m^p
 $$
 
 Thus the CDF of $\|X_1\|$ is $F(m) = m^p$. Let $D_{(1)} = \min_{i=1}^{N}\|X_i\|$. The event $\{D_{(1)} > m\}$ is the intersection of $N$ independent events, each with probability $1-m^p$, so
 
 $$
-P(D_{(1)} > m) = \prod_{i=1}^{N}P(\|X_i\| > m) = (1-m^p)^N
+\Pr(D_{(1)} > m) = \prod_{i=1}^{N}\Pr(\|X_i\| > m) = (1-m^p)^N
 $$
 
-and therefore $P(D_{(1)}\leq m) = 1-(1-m^p)^N$. The median $d = d(p,N)$ satisfies $P(D_{(1)}\leq d) = \tfrac{1}{2}$, giving
+and therefore $\Pr(D_{(1)}\leq m) = 1-(1-m^p)^N$. The median $d = d(p,N)$ satisfies $\Pr(D_{(1)}\leq d) = \tfrac{1}{2}$, giving
 
 $$
 1-(1-d^p)^N = \tfrac{1}{2} \implies (1-d^p)^N = \tfrac{1}{2} \implies 1-d^p = \left(\tfrac{1}{2}\right)^{1/N} \implies d(p,N) = \left(1-\left(\tfrac{1}{2}\right)^{1/N}\right)^{1/p}
 $$
-:::
 
 </details>
-<br>
 
 For $p = 10$ and $N = 500$, this gives $d(10,500) \approx 0.52$, meaning the nearest neighbor is typically more than halfway to the boundary. Thus the nearest neighbor of the origin is not at all local, and this effect worsens rapidly with dimension.
 
@@ -1383,7 +1345,7 @@ Let $\hat{y}_0$ be any estimator of $f(x_0)$ trained on a random training set $\
 
 $$
 \begin{equation}
-\text{MSE}(x_0) = \text{E}_{\mathcal{T}}\bigl[f(x_0) - \hat{y}_0\bigr]^2
+\text{MSE}(x_0) = \mathbb{E}_{\mathcal{T}}\bigl[f(x_0) - \hat{y}_0\bigr]^2
 (\#eq:mse)
 \end{equation}
 $$
@@ -1397,28 +1359,27 @@ $$
 \end{equation}
 $$
 
-where $\text{Bias}(\hat{y}_0) = \text{E}_{\mathcal{T}}[\hat{y}_0] - f(x_0)$.
+where $\text{Bias}(\hat{y}_0) = \mathbb{E}_{\mathcal{T}}[\hat{y}_0] - f(x_0)$.
 
 <details>
 <summary>Proof of the bias-variance decomposition</summary>
-:::{.proof}
-Set $b = \text{E}_{\mathcal{T}}[\hat{y}_0]$, a constant with respect to $\mathcal{T}$. Write $f(x_0) - \hat{y}_0 = (f(x_0) - b) + (b - \hat{y}_0)$ and expand the square:
+
+*Proof.* Set $b = \mathbb{E}_{\mathcal{T}}[\hat{y}_0]$, a constant with respect to $\mathcal{T}$. Write $f(x_0) - \hat{y}_0 = (f(x_0) - b) + (b - \hat{y}_0)$ and expand the square:
 
 $$
 \begin{equation}
 \begin{split}
-\text{MSE}(x_0) &= \text{E}_{\mathcal{T}}\bigl[(f(x_0) - b)^2 + (b - \hat{y}_0)^2 + 2(f(x_0) - b)(b - \hat{y}_0)\bigr] \\
-                &= \text{E}_{\mathcal{T}}\bigl[(b - \hat{y}_0)^2\bigr] + (f(x_0) - b)^2 + 2(f(x_0) - b)\,\text{E}_{\mathcal{T}}\bigl[b - \hat{y}_0\bigr]
+\text{MSE}(x_0) &= \mathbb{E}_{\mathcal{T}}\bigl[(f(x_0) - b)^2 + (b - \hat{y}_0)^2 + 2(f(x_0) - b)(b - \hat{y}_0)\bigr] \\
+                &= \mathbb{E}_{\mathcal{T}}\bigl[(b - \hat{y}_0)^2\bigr] + (f(x_0) - b)^2 + 2(f(x_0) - b)\,\mathbb{E}_{\mathcal{T}}\bigl[b - \hat{y}_0\bigr]
 \end{split}
 \end{equation}
 $$
 
-The cross term vanishes: $\text{E}_{\mathcal{T}}[b - \hat{y}_0] = b - \text{E}_{\mathcal{T}}[\hat{y}_0] = 0$ by the definition of $b$. The first term is $\text{Var}_{\mathcal{T}}(\hat{y}_0)$ and the second is $\text{Bias}^2(\hat{y}_0) = (f(x_0) - \text{E}_{\mathcal{T}}[\hat{y}_0])^2$, giving
+The cross term vanishes: $\mathbb{E}_{\mathcal{T}}[b - \hat{y}_0] = b - \mathbb{E}_{\mathcal{T}}[\hat{y}_0] = 0$ by the definition of $b$. The first term is $\text{Var}_{\mathcal{T}}(\hat{y}_0)$ and the second is $\text{Bias}^2(\hat{y}_0) = (f(x_0) - \mathbb{E}_{\mathcal{T}}[\hat{y}_0])^2$, giving
 
 $$
 \text{MSE}(x_0) = \text{Var}_{\mathcal{T}}(\hat{y}_0) + \text{Bias}^2(\hat{y}_0) \qquad\square
 $$
-:::
 </details>
 
 ### EPE of the Least-Squares Estimator
@@ -1427,7 +1388,7 @@ We now derive the EPE of the least-squares estimator $\hat{y}_0 = x_0^T\hat{\bet
 
 $$
 \begin{equation}
-\text{EPE}(x_0) = \text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}\bigl[(y_0 - \hat{y}_0)^2\bigr]
+\text{EPE}(x_0) = \mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}\bigl[(y_0 - \hat{y}_0)^2\bigr]
 (\#eq:epe-noisy)
 \end{equation}
 $$
@@ -1436,7 +1397,7 @@ where $\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}$. Since
 
 $$
 \begin{equation}
-\text{EPE}(x_0) = \sigma^2 + \text{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2
+\text{EPE}(x_0) = \sigma^2 + \mathbb{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2
 (\#eq:epe-linear)
 \end{equation}
 $$
@@ -1448,17 +1409,17 @@ The first term $\sigma^2$ is the irreducible variance of $y_0$ itself; the secon
 
 Four lemmas are established before the main argument.
 
-::: {.lemma} **Linear representation of $\\hat{y}_0$** The prediction $\hat{y}_0$ satisfies
+::: {.lemma #lem-linear-rep}
+**Linear representation of** $\hat{y}_0$**.** The prediction $\hat{y}_0$ satisfies
 
 $$
 \hat{y}_0 = x_0^T\beta + \sum_{i=1}^N l_i(x_0)\,\varepsilon_i
 $$
 
-where $l(x_0) = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}x_0 \in \mathbb{R}^N$ and $l_i(x_0)$ is its $i$-th component.
+where $l(x_0) = \mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}x_0 \in \mathbb{R}^N$ and $l_i(x_0)$ is its $i$th component.
 :::
 
-:::{.proof}
-Substituting $\mathbf{y} = \mathbf{X}\beta + \varepsilon$ into $\hat{y}_0 = x_0^T\hat{\beta}$:
+*Proof.* Substituting $\mathbf{y} = \mathbf{X}\beta + \varepsilon$ into $\hat{y}_0 = x_0^T\hat{\beta}$:
 
 $$
 \begin{equation}
@@ -1472,47 +1433,43 @@ $$
 $$
 
 Setting $l(x_0)^T = x_0^T(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \in \mathbb{R}^{1 \times N}$ gives $x_0^T(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\varepsilon = \sum_{i=1}^N l_i(x_0)\varepsilon_i$, whence the stated representation follows.
+
+::: {.lemma #lem-unbiased}
+**Unbiasedness.** The least-squares estimator satisfies $\mathbb{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}] = \beta$ and $\mathbb{E}[\hat{\beta}] = \beta$.
 :::
 
-::: {.lemma #lem-unbiased name="Unbiasedness"}
-The least-squares estimator satisfies $\text{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}] = \beta$ and $\text{E}[\hat{\beta}] = \beta$.
-:::
-
-:::{.proof}
-Conditioning on $\mathbf{X}$ and substituting $\mathbf{y} = \mathbf{X}\beta + \varepsilon$:
+*Proof.* Conditioning on $\mathbf{X}$ and substituting $\mathbf{y} = \mathbf{X}\beta + \varepsilon$:
 
 $$
 \begin{equation}
 \begin{split}
-\text{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}] &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{E}_\varepsilon[\mathbf{y} \mid \mathbf{X}] \\
-                                                  &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{E}_\varepsilon[\mathbf{X}\beta + \varepsilon \mid \mathbf{X}] \\
-                                                  &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\text{E}[\varepsilon \mid \mathbf{X}] \\
+\mathbb{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}] &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbb{E}_\varepsilon[\mathbf{y} \mid \mathbf{X}] \\
+                                                  &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbb{E}_\varepsilon[\mathbf{X}\beta + \varepsilon \mid \mathbf{X}] \\
+                                                  &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbb{E}[\varepsilon \mid \mathbf{X}] \\
                                                   &= \beta + 0 = \beta
 \end{split}
 \end{equation}
 $$
 
-where the last equality uses $\text{E}[\varepsilon \mid \mathbf{X}] = 0$ by assumption. Unconditional unbiasedness follows from the tower property: $\text{E}[\hat{\beta}] = \text{E}_{\mathbf{X}}[\text{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}]] = \text{E}_{\mathbf{X}}[\beta] = \beta$.
+where the last equality uses $\mathbb{E}[\varepsilon \mid \mathbf{X}] = 0$ by assumption. Unconditional unbiasedness follows from the tower property: $\mathbb{E}[\hat{\beta}] = \mathbb{E}_{\mathbf{X}}[\mathbb{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}]] = \mathbb{E}_{\mathbf{X}}[\beta] = \beta$.
+
+::: {.lemma #lem-cond-mean}
+**Conditional mean of** $y_0$**.** The conditional expectation satisfies $\mathbb{E}[y_0 \mid x_0] = x_0^T\beta$.
 :::
 
-::: {.lemma} **(Conditional mean of $y_0$)** The conditional expectation satisfies $\text{E}[y_0 \mid x_0] = x_0^T\beta$.
-:::
-
-:::{.proof}
-Writing $y_0 = x_0^T\beta + \varepsilon_0$ and applying linearity of conditional expectation:
+*Proof.* Writing $y_0 = x_0^T\beta + \varepsilon_0$ and applying linearity of conditional expectation:
 
 $$
-\text{E}[y_0 \mid x_0] = \text{E}[x_0^T\beta + \varepsilon_0 \mid x_0] = x_0^T\beta + \text{E}[\varepsilon_0 \mid x_0] = x_0^T\beta
+\mathbb{E}[y_0 \mid x_0] = \mathbb{E}[x_0^T\beta + \varepsilon_0 \mid x_0] = x_0^T\beta + \mathbb{E}[\varepsilon_0 \mid x_0] = x_0^T\beta
 $$
 
-where $\text{E}[\varepsilon_0 \mid x_0] = 0$ holds by assumption.
-:::
+where $\mathbb{E}[\varepsilon_0 \mid x_0] = 0$ holds by assumption.
 
-::: {.lemma} **Variance of $\\hat{y}_0$**
-The training-set variance of $\hat{y}_0$ satisfies
+::: {.lemma #lem-var}
+**Variance of** $\hat{y}_0$**.** The training-set variance of $\hat{y}_0$ satisfies
 
 $$
-\text{Var}_{\mathcal{T}}(\hat{y}_0) = \text{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2
+\text{Var}_{\mathcal{T}}(\hat{y}_0) = \mathbb{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2
 $$
 :::
 
@@ -1521,33 +1478,32 @@ The proof relies on the following sub-lemma.
 **Sub-lemma (Expectation of a quadratic form)**. For a fixed vector $z \in \mathbb{R}^p$ and a random matrix $A \in \mathbb{R}^{p \times p}$,
 
 $$
-\text{E}[z^TAz] = z^T\text{E}[A]\,z
+\mathbb{E}[z^TAz] = z^T\mathbb{E}[A]\,z
 $$
 
 *Proof.* Since $z$ is fixed, expanding the quadratic form and applying linearity of expectation:
 
 $$
-\text{E}[z^TAz] = \text{E}\!\left[\sum_{i=1}^p\sum_{j=1}^p z_i A_{ij} z_j\right] = \sum_{i=1}^p\sum_{j=1}^p z_i\,\text{E}[A_{ij}]\,z_j = z^T\text{E}[A]\,z \qquad\square
+\mathbb{E}[z^TAz] = \mathbb{E}\!\left[\sum_{i=1}^p\sum_{j=1}^p z_i A_{ij} z_j\right] = \sum_{i=1}^p\sum_{j=1}^p z_i\,\mathbb{E}[A_{ij}]\,z_j = z^T\mathbb{E}[A]\,z \qquad\square
 $$
 
-:::{.proof}
-Since $\text{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\text{E}_{\mathcal{T}}[\hat{\beta}] = x_0^T\beta$ by Lemma \@ref(lem:lem-unbiased), we have $\hat{y}_0 - \text{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\hat{\beta} - x_0^T\beta = x_0^T(\hat{\beta} - \beta)$. Thus
+*Proof.* Since $\mathbb{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\mathbb{E}_{\mathcal{T}}[\hat{\beta}] = x_0^T\beta$ by Lemma \@ref(lem:lem-unbiased), we have $\hat{y}_0 - \mathbb{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\hat{\beta} - x_0^T\beta = x_0^T(\hat{\beta} - \beta)$. Thus
 
 $$
 \begin{equation}
 \begin{split}
-\text{Var}_{\mathcal{T}}(\hat{y}_0) &= \text{E}_{\mathcal{T}}\bigl[(\hat{y}_0 - \text{E}_{\mathcal{T}}[\hat{y}_0])^2\bigr] \\
-                                    &= \text{E}_{\mathcal{T}}\bigl[x_0^T(\hat{\beta} - \beta)(\hat{\beta} - \beta)^Tx_0\bigr] \\
-                                    &= x_0^T\,\text{E}_{\mathcal{T}}\bigl[(\hat{\beta} - \beta)(\hat{\beta} - \beta)^T\bigr]\,x_0 \\
+\text{Var}_{\mathcal{T}}(\hat{y}_0) &= \mathbb{E}_{\mathcal{T}}\bigl[(\hat{y}_0 - \mathbb{E}_{\mathcal{T}}[\hat{y}_0])^2\bigr] \\
+                                    &= \mathbb{E}_{\mathcal{T}}\bigl[x_0^T(\hat{\beta} - \beta)(\hat{\beta} - \beta)^Tx_0\bigr] \\
+                                    &= x_0^T\,\mathbb{E}_{\mathcal{T}}\bigl[(\hat{\beta} - \beta)(\hat{\beta} - \beta)^T\bigr]\,x_0 \\
                                     &= x_0^T\,\text{Var}_{\mathcal{T}}(\hat{\beta})\,x_0
 \end{split}
 \end{equation}
 $$
 
-where the third line applies the sub-lemma with $z = x_0$ and $A = (\hat{\beta} - \beta)(\hat{\beta} - \beta)^T$, and the last uses $\text{E}_\mathcal{T}[\hat{\beta}] = \beta$ from Lemma \@ref(lem:lem-unbiased). It remains to compute $\text{Var}_{\mathcal{T}}(\hat{\beta})$. By the law of total variance over $(\mathbf{X}, \varepsilon)$:
+where the third line applies the sub-lemma with $z = x_0$ and $A = (\hat{\beta} - \beta)(\hat{\beta} - \beta)^T$, and the last uses $\mathbb{E}_\mathcal{T}[\hat{\beta}] = \beta$ from Lemma \@ref(lem:lem-unbiased). It remains to compute $\text{Var}_{\mathcal{T}}(\hat{\beta})$. By the law of total variance over $(\mathbf{X}, \varepsilon)$:
 
 $$
-\text{Var}_{\mathcal{T}}(\hat{\beta}) = \text{E}_{\mathbf{X}}\bigl[\text{Var}_\varepsilon(\hat{\beta} \mid \mathbf{X})\bigr] + \text{Var}_{\mathbf{X}}\bigl[\text{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}]\bigr]
+\text{Var}_{\mathcal{T}}(\hat{\beta}) = \mathbb{E}_{\mathbf{X}}\bigl[\text{Var}_\varepsilon(\hat{\beta} \mid \mathbf{X})\bigr] + \text{Var}_{\mathbf{X}}\bigl[\mathbb{E}_\varepsilon[\hat{\beta} \mid \mathbf{X}]\bigr]
 $$
 
 The second term is $\text{Var}_{\mathbf{X}}[\beta] = 0$ since $\beta$ is a fixed constant. For the first term, since $\hat{\beta} = \beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\varepsilon$ and $\beta$ is a constant:
@@ -1567,23 +1523,21 @@ $$
 where the second line uses the identity $\text{Var}(Av) = A\,\text{Var}(v)\,A^T$ for a fixed matrix $A$; the third line uses $\text{Var}(\varepsilon \mid \mathbf{X}) = \sigma^2 I$, which holds because errors are homoscedastic ($\text{Var}(\varepsilon_i) = \sigma^2$ for all $i$), mutually uncorrelated ($\text{Cov}(\varepsilon_i, \varepsilon_j) = 0$ for $i \neq j$), and independent of $\mathbf{X}$; and the last line uses $\mathbf{X}^T\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1} = I$.
 
 $$
-\text{Var}_{\mathcal{T}}(\hat{\beta}) = \text{E}_{\mathbf{X}}\bigl[\sigma^2(\mathbf{X}^T\mathbf{X})^{-1}\bigr] = \sigma^2\,\text{E}_{\mathbf{X}}\bigl[(\mathbf{X}^T\mathbf{X})^{-1}\bigr]
+\text{Var}_{\mathcal{T}}(\hat{\beta}) = \mathbb{E}_{\mathbf{X}}\bigl[\sigma^2(\mathbf{X}^T\mathbf{X})^{-1}\bigr] = \sigma^2\,\mathbb{E}_{\mathbf{X}}\bigl[(\mathbf{X}^T\mathbf{X})^{-1}\bigr]
 $$
 
-Therefore, reversing the sub-lemma and noting that $x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0$ depends on $\mathcal{T}$ only through $\mathbf{X}$, so $E_{\mathbf{X}} = E_{\mathcal{T}}$ on this quantity:
+Therefore, reversing the sub-lemma and noting that $x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0$ depends on $\mathcal{T}$ only through $\mathbf{X}$, so $\mathbb{E}_{\mathbf{X}} = \mathbb{E}_{\mathcal{T}}$ on this quantity:
 
 $$
-\text{Var}_{\mathcal{T}}(\hat{y}_0) = x_0^T\,\sigma^2\,\text{E}_{\mathbf{X}}\bigl[(\mathbf{X}^T\mathbf{X})^{-1}\bigr]\,x_0 = \text{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2 \qquad\square
+\text{Var}_{\mathcal{T}}(\hat{y}_0) = x_0^T\,\sigma^2\,\mathbb{E}_{\mathbf{X}}\bigl[(\mathbf{X}^T\mathbf{X})^{-1}\bigr]\,x_0 = \mathbb{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2 \qquad\square
 $$
-:::
 
 With these lemmas established, the proof of equation \@ref(eq:epe-linear) proceeds as follows.
 
-:::{.proof}
-Decompose $y_0 - \hat{y}_0$ into three terms that telescope to the full residual:
+*Proof.* Decompose $y_0 - \hat{y}_0$ into three terms that telescope to the full residual:
 
 $$
-y_0 - \hat{y}_0 = \underbrace{(y_0 - x_0^T\beta)}_{U_1} + \underbrace{(\text{E}_{\mathcal{T}}[\hat{y}_0] - \hat{y}_0)}_{U_2} + \underbrace{(x_0^T\beta - \text{E}_{\mathcal{T}}[\hat{y}_0])}_{U_3}
+y_0 - \hat{y}_0 = \underbrace{(y_0 - x_0^T\beta)}_{U_1} + \underbrace{(\mathbb{E}_{\mathcal{T}}[\hat{y}_0] - \hat{y}_0)}_{U_2} + \underbrace{(x_0^T\beta - \mathbb{E}_{\mathcal{T}}[\hat{y}_0])}_{U_3}
 $$
 
 One verifies directly that $U_1 + U_2 + U_3 = y_0 - \hat{y}_0$. Squaring and expanding,
@@ -1592,80 +1546,78 @@ $$
 (y_0 - \hat{y}_0)^2 = U_1^2 + U_2^2 + U_3^2 + 2U_1U_2 + 2U_1U_3 + 2U_2U_3
 $$
 
-Taking $\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[\,\cdot\,]$, we evaluate the three diagonal terms. For $U_1^2$: writing $y_0 = x_0^T\beta + \varepsilon_0$ so that $U_1 = \varepsilon_0$,
+Taking $\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[\,\cdot\,]$, we evaluate the three diagonal terms. For $U_1^2$: writing $y_0 = x_0^T\beta + \varepsilon_0$ so that $U_1 = \varepsilon_0$,
 
 $$
-\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[U_1^2] = \text{E}_{y_0 \mid x_0}[(y_0 - x_0^T\beta)^2] = \text{E}_{y_0 \mid x_0}[\varepsilon_0^2] = \text{Var}(\varepsilon_0 \mid x_0) = \sigma^2
+\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[U_1^2] = \mathbb{E}_{y_0 \mid x_0}[(y_0 - x_0^T\beta)^2] = \mathbb{E}_{y_0 \mid x_0}[\varepsilon_0^2] = \text{Var}(\varepsilon_0 \mid x_0) = \sigma^2
 $$
 
-where the last equality uses $\text{E}[\varepsilon_0 \mid x_0] = 0$, the property of conditional mean and $\text{Var}(\varepsilon_0 \mid x_0) = \sigma^2$ by the homoscedasticity assumption. For $U_2^2$:
+where the last equality uses $\mathbb{E}[\varepsilon_0 \mid x_0] = 0$, the property of conditional mean and $\text{Var}(\varepsilon_0 \mid x_0) = \sigma^2$ by the homoscedasticity assumption. For $U_2^2$:
 
 $$
-\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[U_2^2] = \text{E}_{\mathcal{T}}\bigl[(\hat{y}_0 - \text{E}_{\mathcal{T}}[\hat{y}_0])^2\bigr] = \text{Var}_{\mathcal{T}}(\hat{y}_0)
+\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[U_2^2] = \mathbb{E}_{\mathcal{T}}\bigl[(\hat{y}_0 - \mathbb{E}_{\mathcal{T}}[\hat{y}_0])^2\bigr] = \text{Var}_{\mathcal{T}}(\hat{y}_0)
 $$
 
-For $U_3^2$: by Lemma \@ref(lem:lem-unbiased), $\text{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\beta$, and therefore
+For $U_3^2$: by Lemma \@ref(lem:lem-unbiased), $\mathbb{E}_{\mathcal{T}}[\hat{y}_0] = x_0^T\beta$, and therefore
 
 $$
-U_3 = x_0^T\beta - \text{E}_{\mathcal{T}}[\hat{y}_0] = 0
+U_3 = x_0^T\beta - \mathbb{E}_{\mathcal{T}}[\hat{y}_0] = 0
 $$
 
-so $\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[U_3^2] = 0$. This is the Bias$^2$ term of the decomposition; it vanishes because least squares is unbiased.
+so $\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[U_3^2] = 0$. This is the Bias$^2$ term of the decomposition; it vanishes because least squares is unbiased.
 
 It remains to verify that all cross terms vanish. For $2U_1U_2$: by Lemma \@ref(lem:lem-linear-rep), $\hat{y}_0 = x_0^T\beta + \sum_{i}l_i(x_0)\varepsilon_i$, so
 
 $$
-U_2 = \text{E}_{\mathcal{T}}[\hat{y}_0] - \hat{y}_0 = x_0^T\beta - \left(x_0^T\beta + \sum_{i=1}^N l_i(x_0)\varepsilon_i\right) = -\sum_{i=1}^N l_i(x_0)\varepsilon_i
+U_2 = \mathbb{E}_{\mathcal{T}}[\hat{y}_0] - \hat{y}_0 = x_0^T\beta - \left(x_0^T\beta + \sum_{i=1}^N l_i(x_0)\varepsilon_i\right) = -\sum_{i=1}^N l_i(x_0)\varepsilon_i
 $$
 
-Since $U_1 = y_0 - x_0^T\beta$ depends only on the test output $y_0$ and not on the training set $\mathcal{T}$, it factors out of $\text{E}_{\mathcal{T}}$:
+Since $U_1 = y_0 - x_0^T\beta$ depends only on the test output $y_0$ and not on the training set $\mathcal{T}$, it factors out of $\mathbb{E}_{\mathcal{T}}$:
 
 $$
-\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[U_1 U_2] = \text{E}_{y_0 \mid x_0}\left[(y_0 - x_0^T\beta)\,\text{E}_{\mathcal{T}}\!\left[-\sum_{i=1}^N l_i(x_0)\varepsilon_i\right]\right]
+\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[U_1 U_2] = \mathbb{E}_{y_0 \mid x_0}\left[(y_0 - x_0^T\beta)\,\mathbb{E}_{\mathcal{T}}\!\left[-\sum_{i=1}^N l_i(x_0)\varepsilon_i\right]\right]
 $$
 
-By linearity and $\text{E}[\varepsilon_i] = 0$ for all $i$:
+By linearity and $\mathbb{E}[\varepsilon_i] = 0$ for all $i$:
 
 $$
-\text{E}_{\mathcal{T}}\!\left[-\sum_{i=1}^N l_i(x_0)\varepsilon_i\right] = -\sum_{i=1}^N l_i(x_0)\,\text{E}[\varepsilon_i] = 0
+\mathbb{E}_{\mathcal{T}}\!\left[-\sum_{i=1}^N l_i(x_0)\varepsilon_i\right] = -\sum_{i=1}^N l_i(x_0)\,\mathbb{E}[\varepsilon_i] = 0
 $$
 
-Hence $\text{E}_{y_0 \mid x_0}\,\text{E}_{\mathcal{T}}[U_1U_2] = 0$. The remaining cross terms vanish trivially: since $U_3 = 0$, both $2U_1U_3 = 0$ and $2U_2U_3 = 0$ hold identically.
+Hence $\mathbb{E}_{y_0 \mid x_0}\,\mathbb{E}_{\mathcal{T}}[U_1U_2] = 0$. The remaining cross terms vanish trivially: since $U_3 = 0$, both $2U_1U_3 = 0$ and $2U_2U_3 = 0$ hold identically.
 
 Combining the three diagonal terms:
 
 $$
-\text{EPE}(x_0) = \sigma^2 + \text{Var}_{\mathcal{T}}(\hat{y}_0) + 0 = \sigma^2 + \text{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2 \qquad\square
+\text{EPE}(x_0) = \sigma^2 + \text{Var}_{\mathcal{T}}(\hat{y}_0) + 0 = \sigma^2 + \mathbb{E}_{\mathcal{T}}\bigl[x_0^T(\mathbf{X}^T\mathbf{X})^{-1}x_0\bigr]\,\sigma^2 \qquad\square
 $$
-:::
 
 </details>
 
 ### Expected EPE Averaged Over $x_0$
 
-Equation \@ref(eq:epe-linear) shows that the EPE at a fixed $x_0$ depends on both $x_0$ and the random design $\mathbf{X}$. When $N$ is large and $\mathcal{T}$ is drawn at random with $\text{E}[X] = 0$, averaging over $x_0$ yields the linear growth
+Equation \@ref(eq:epe-linear) shows that the EPE at a fixed $x_0$ depends on both $x_0$ and the random design $\mathbf{X}$. When $N$ is large and $\mathcal{T}$ is drawn at random with $\mathbb{E}[X] = 0$, averaging over $x_0$ yields the linear growth
 
 $$
 \begin{equation}
-\text{E}_{x_0}\,\text{EPE}(x_0) \approx \sigma^2\,\frac{p}{N} + \sigma^2
+\mathbb{E}_{x_0}\,\text{EPE}(x_0) \approx \sigma^2\,\frac{p}{N} + \sigma^2
 (\#eq:epe-avg)
 \end{equation}
 $$
 
 <details>
 <summary>Proof of expected EPE over $x_0$</summary>
-:::{.proof}
 
-Since $\text{E}[X] = 0$ by assumption, the covariance of $X$ simplifies to
+*Proof.* Since $\mathbb{E}[X] = 0$ by assumption, the covariance of $X$ simplifies to
 
 $$
-\text{Cov}(X) = \text{E}\bigl[(X - \text{E}[X])(X - \text{E}[X])^T\bigr] = \text{E}[XX^T]
+\text{Cov}(X) = \mathbb{E}\bigl[(X - \mathbb{E}[X])(X - \mathbb{E}[X])^T\bigr] = \mathbb{E}[XX^T]
 $$
 
 By the law of large numbers applied to the $N$ i.i.d. rows $x_i$ of $\mathbf{X}$:
 
 $$
-\frac{\mathbf{X}^T\mathbf{X}}{N} = \frac{1}{N}\sum_{i=1}^N x_i x_i^T \;\xrightarrow{N\to\infty}\; \text{E}[XX^T] = \text{Cov}(X)
+\frac{\mathbf{X}^T\mathbf{X}}{N} = \frac{1}{N}\sum_{i=1}^N x_i x_i^T \;\xrightarrow{N\to\infty}\; \mathbb{E}[XX^T] = \text{Cov}(X)
 $$
 
 Writing $\mathbf{X}^T\mathbf{X} = N \cdot (\mathbf{X}^T\mathbf{X}/N)$ and inverting:
@@ -1691,13 +1643,13 @@ This holds because $\text{trace}(Axx^T) = \sum_{i}\sum_j A_{ij}(xx^T)_{ji} = \su
 $$
 \begin{equation}
 \begin{split}
-\text{E}_{x_0}\bigl[x_0^T\,\text{Cov}(X)^{-1}\,x_0\bigr] &= \text{E}_{x_0}\bigl[\text{trace}\bigl(\text{Cov}(X)^{-1}x_0x_0^T\bigr)\bigr] \\
-                                                          &= \text{trace}\bigl(\text{Cov}(X)^{-1}\,\text{E}_{x_0}[x_0 x_0^T]\bigr)
+\mathbb{E}_{x_0}\bigl[x_0^T\,\text{Cov}(X)^{-1}\,x_0\bigr] &= \mathbb{E}_{x_0}\bigl[\text{trace}\bigl(\text{Cov}(X)^{-1}x_0x_0^T\bigr)\bigr] \\
+                                                          &= \text{trace}\bigl(\text{Cov}(X)^{-1}\,\mathbb{E}_{x_0}[x_0 x_0^T]\bigr)
 \end{split}
 \end{equation}
 $$
 
-where the second equality uses the linearity of trace and expectation. Since $\text{E}[X] = 0$, the second moment equals the covariance: $\text{E}_{x_0}[x_0 x_0^T] = \text{Cov}(X)$. Therefore
+where the second equality uses the linearity of trace and expectation. Since $\mathbb{E}[X] = 0$, the second moment equals the covariance: $\mathbb{E}_{x_0}[x_0 x_0^T] = \text{Cov}(X)$. Therefore
 
 $$
 \text{trace}\bigl(\text{Cov}(X)^{-1}\,\text{Cov}(X)\bigr) = \text{trace}(I_p) = p
@@ -1706,14 +1658,13 @@ $$
 Combining with equation \@ref(eq:epe-linear):
 
 $$
-\text{E}_{x_0}\,\text{EPE}(x_0) \approx \sigma^2 + \frac{p\,\sigma^2}{N} = \sigma^2\!\left(\frac{p}{N} + 1\right) \qquad\square
+\mathbb{E}_{x_0}\,\text{EPE}(x_0) \approx \sigma^2 + \frac{p\,\sigma^2}{N} = \sigma^2\!\left(\frac{p}{N} + 1\right) \qquad\square
 $$
-:::
 </details>
 
 The expected prediction error grows linearly in $p$ at rate $\sigma^2/N$. By imposing the parametric structure $f(x) \approx x^T\beta$, least squares circumvents the curse of dimensionality: the estimation cost scales as $p/N$ rather than exponentially in $p$.
 
-```{r dimensionaltiy simulation 1, warning=FALSE, fig.cap="Simulation example 1", fig.width=10, fig.height=10}
+```{r dimsim1, warning=FALSE, fig.cap="Simulation example 1", fig.width=10, fig.height=10}
 # X ~ Uniform[-1,1]^p, query point x0 = 0, no noise
 
 
@@ -1838,7 +1789,7 @@ abline(lm(dist ~ p, data = df_27), lty = 2, col = "red", lwd = 1.5)
 ylim4 <- c(0, max(df_27$mse) * 1.05)
 
 plot(df_27$p, df_27$mse, type = "b", pch = 19, col = "red", cex = 1.1,
-     xlab = "Dimension", ylab = "Mse", main = "MSE vs. Dimension",
+     xlab = "Dimension", ylab = "MSE", main = "MSE vs. Dimension",
      ylim = ylim4, xaxt = "n")
 axis(1, at = dims)
 lines(df_27$p, df_27$var,   type = "b", pch = 19, col = "green3", cex = 1.1)
@@ -1849,7 +1800,7 @@ legend("topleft",
        pch = 19, lty = 1, bty = "n", cex = 0.85)
 ```
 
-```{r dimensionaltiy simulation 2, warning=FALSE, fig.cap="Simulation example 2", fig.width=7, fig.height=5}
+```{r dimsim2, warning=FALSE, fig.cap="Simulation example 2", fig.width=7, fig.height=5}
 # Figure 2.8
 
 x1d_28 <- runif(N_disp, -1, 1)
@@ -1887,11 +1838,11 @@ legend("topleft",
 ```
 
 [^1]: For a detailed proof of the derivation of the normal equation, see Appendix A at the end of this chapter.
-[^2]: Proof for $\text{Col}(\textbf{X}^T\textbf{X}) = \text{Col}(\textbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-\text{Col}ata-colat)
+[^2]: Proof for $\text{Col}(\mathbf{X}^T\mathbf{X}) = \text{Col}(\mathbf{X}^T)$ can be accessed at this [Stack Exchange post](https://math.stackexchange.com/questions/3573576/given-an-n-times-m-matrix-a-prove-that-colata-colat).
 [^3]: Derivation of the first-order characterization of a convex function can be accessed at this [pdf file](https://www.princeton.edu/~aaa/Public/Teaching/ORF523/S16/ORF523_S16_Lec7_gh.pdf)
-[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. As $\mathbb{R}$ is uncountable, it follows that $V$ has uncountable many elements
+[^4]: If $V$ is a nontrivial linear subspace, then there exists some nonzero vector $v\in V$. As $V$ is closed under scalar multiplication, $cv\in V$ for any scalar $c\in\mathbb{R}$. Since $\mathbb{R}$ is uncountable, it follows that $V$ has uncountably many elements.
 [^5]: Essentially, the $p$-dim predicted surface generated by the statistical model is determined by the $p$ parameters. A simple linear regression of the form $y = \beta_0 + \beta_1x_1$ forms a line, characterized by ($\beta_0$, $\beta_1$) where all possible values reside. On the other hand, a linear regression of two input variables $y = \beta_0 + \beta_1x_1 + \beta_2x_2$ forms a plane, characterized by ($\beta_0$, $\beta_1$, $\beta_2$) where all possible values reside.
 [^6]: Generally, the distance metric is specified by the Minkowski distance
-    $d(\textbf{x}, \textbf{z}) = (\sum_{r=1}^N |x_i - z_i|^p)^{\frac{1}{p}}$
-    Special cases include: $p = 1$ (Manhattan Distance), <br> $p = 2$ (Euclidean Distance), <br> $p \rightarrow \infty$ (Chebyshev Distance).
-[^7]: Every point in $\mathcal{T}$ but not in $N_k$, is at least as far away from $\textbf{x}$ as the furthest point in $N_k$
+    $d(\mathbf{x}, \mathbf{z}) = \left(\sum_{r=1}^{N} |x_r - z_r|^p\right)^{1/p}$.
+    Special cases include $p = 1$ (Manhattan distance), $p = 2$ (Euclidean distance), and $p \rightarrow \infty$ (Chebyshev distance).
+[^7]: Every point in $\mathcal{T}$ but not in $N_k$ is at least as far from $\mathbf{x}$ as the farthest point in $N_k$.
