@@ -52,7 +52,7 @@ where $\hat{\beta}_0$ is the intercept. Equivalently, we can write the linear mo
 $$
 \begin{equation}
 \hat{Y} = X^{T}\hat{\beta}
-(\#eq:leqvec)
+(\#eq:leq-vec)
 \end{equation}
 $$
 
@@ -64,10 +64,10 @@ If $\mathbf{X}$ is instead a feature matrix with $N$ samples and $p+1$ columns (
 <summary>Proposition: the linear model is a hyperplane.</summary>
 
 ::: {.proposition #prp-hyperplane}
-In the $(p+1)$-dimensional input-output space, the graph $(X, \hat{Y})$ of the linear model \@ref(eq:leqvec) is a hyperplane.
+In the $(p+1)$-dimensional input-output space, the graph $(X, \hat{Y})$ of the linear model \@ref(eq:leq-vec) is a hyperplane.
 :::
 
-*Proof.* By the linear structure of equation \@ref(eq:leqvec),
+*Proof.* By the linear structure of equation \@ref(eq:leq-vec),
 
 $$
 \begin{equation}
@@ -241,7 +241,7 @@ $$
 \text{ORANGE} & \hat{Y} > 0.5\\
 \text{BLUE} & \hat{Y} \leq 0.5
 \end{cases}
-(\#eq:classlabel)
+(\#eq:class-label)
 \end{equation}
 $$
 
@@ -291,7 +291,7 @@ grid_data <- expand.grid(x1 = grid_x1, x2 = grid_x2)
 
 We generated $10$ centers $m_k^{(1)} \sim N((0,1)^T, I)$ for `r color("ORANGE", "orange")` class and $10$ centers $m_k^{(0)} \sim N((1,0)^T, I)$ for `r color("BLUE", "blue")` class. Then, to create a Gaussian mixture model, we select a mean $m_k$ from each class with probability $\pi_k = \frac{1}{10}$ and generate an observation from $N(m_k, I/5)$. We generate $100$ observations for each class using this method and train our model on the data.
 
-```{r linearmodel, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
+```{r linear-model, fig.cap="Classification example in two dimensions.", max_height = "50px", warning=FALSE}
 # Fit simple linear model
 lm_data <- data.frame(Y = as.numeric(test_mat$Y == "Orange"), x1 = test_mat$x1, x2 = test_mat$x2)
 boundary_model <- lm(Y ~ x1 + x2, data = lm_data)
@@ -328,7 +328,7 @@ p + geom_abline(slope = boundary_slope, intercept = boundary_intercept,
                 color = "black", linewidth = 1)
 ```
 
-In \@ref(fig:linearmodel), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta} > 0.5\}$, and the two predicted classes are separated by the linear *decision boundary* $\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
+In \@ref(fig:linear-model), the set of points in $\mathbb{R}^2$ classified as `r color("ORANGE", "orange")` corresponds to $\{x:x^T\hat{\beta} > 0.5\}$, and the two predicted classes are separated by the linear *decision boundary* $\{x:x^T\hat{\beta} = 0.5\}$. There are some misclassifications in the simulated data.
 
 ### Nearest-Neighbor Methods
 
@@ -338,7 +338,7 @@ $$
 \hat{Y}(x) = \frac{1}{k}\sum_{x_i\in N_k(x)} y_i
 $$
 
-where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$th smallest distance from $x$ to the training points, and $d(x_i,x)$ is the Euclidean norm $\|x_i-x\|_2$.[^6] The fitted value $\hat{Y}$ is converted to a class label $\hat{G}$ as in equation \@ref(eq:classlabel).
+where $N_k(x) = \{x_i \in \mathcal{T}:d(x_i,x) \leq d_{(k)}(x)\}$ is the $k$-nearest neighborhood of point $x$ and $|N_k| = k$. Here $d_{(k)}(x)$ denotes the $k$th smallest distance from $x$ to the training points, and $d(x_i,x)$ is the Euclidean norm $\|x_i-x\|_2$.[^6] The fitted value $\hat{Y}$ is converted to a class label $\hat{G}$ as in equation \@ref(eq:class-label).
 
 ```{r KNNexample, echo=FALSE, fig.align="center", fig.cap="Example of a 3-NN algorithm."}
 knitr::include_graphics("Chp2/pictures/note2_1.png")
@@ -394,7 +394,7 @@ ggplot() +
   coord_fixed(ratio = 0.75)
 ```
 
-In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linearmodel), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} > 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
+In Figure \@ref(fig:knn1), the same training data is used as in Figure \@ref(fig:linear-model), and we used 15-nearest-neighbor averaging of the binary coded response as the method of fitting. $\hat{Y}$ is the proportion of `r color("ORANGE", "orange")`'s in the neighborhood, and so assigning class `r color("ORANGE", "orange")` to $\hat{G}$ if $\hat{Y} > 0.5$ is essentially a majority vote in the neighborhood. We see that the decision boundaries are irregular, non-linear, and respond to local clusters where one class dominates.
 
 ```{r knn2, echo=FALSE, fig.cap="Classes are coded as a binary variable and then predicted by 1-nearest neighbor classification."}
 # knn implementation
@@ -666,7 +666,7 @@ $$
 \mathbb{E}[XX^T]\beta &= \mathbb{E}[XY] \\
 \beta &= (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY]
 \end{split}
-(\#eq:linearoptimal)
+(\#eq:linear-optimal)
 \end{equation}
 $$
 
@@ -680,7 +680,7 @@ $$
 <summary>Proposition: limit of the least-squares solution.</summary>
 
 ::: {.proposition #prp-lse-limit}
-Under the linear model, the least-squares estimator converges to the population optimum \@ref(eq:linearoptimal) as the sample size grows:
+Under the linear model, the least-squares estimator converges to the population optimum \@ref(eq:linear-optimal) as the sample size grows:
 $$
 \hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y} \xrightarrow{N\to\infty} (\mathbb{E}[XX^T])^{-1}\mathbb{E}[XY] = \beta
 $$
@@ -748,7 +748,6 @@ $$
 \text{(i)}\ \Pr(X \leq c^*) \geq \frac{1}{2} \qquad \text{and} \qquad \text{(ii)}\ \Pr(X \geq c^*) \geq \frac{1}{2}
 \end{equation}
 $$
-
 
 To establish (i), take a sequence $\{t_n\}$ with $t_n \downarrow c^*$. Since each $t_n > c^* = \inf\{t : F_X(t) \geq 1/2\}$, each $t_n$ belongs to $\{t : F_X(t) \geq 1/2\}$, so $F_X(t_n) \geq 1/2$ for every $n$. By right-continuity of $F_X$, we have $F_X(t_n) \to F_X(c^*)$ as $t_n \downarrow c^*$, and hence $F_X(c^*) \geq 1/2$ and $\Pr(X \leq c^*) \geq 1/2$.
 
@@ -1069,7 +1068,7 @@ d(p, N) = \left(1 - \left(\frac{1}{2}\right)^{1/N}\right)^{1/p}
 (\#eq:mediandist)
 \end{equation}
 $$
-
+MD033/no-inline-html: Inline HTML [Element: details]markdownlintMD033
 <details>
 <summary>Proof of median nearest-neighbor distance formula.</summary>
 
