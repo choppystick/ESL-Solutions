@@ -1068,7 +1068,6 @@ d(p, N) = \left(1 - \left(\frac{1}{2}\right)^{1/N}\right)^{1/p}
 (\#eq:mediandist)
 \end{equation}
 $$
-MD033/no-inline-html: Inline HTML [Element: details]markdownlintMD033
 <details>
 <summary>Proof of median nearest-neighbor distance formula.</summary>
 
@@ -1595,14 +1594,19 @@ $$
 
 ### Expected EPE Averaged Over $x_0$
 
-Equation \@ref(eq:epe-linear) shows that the EPE at a fixed $x_0$ depends on both $x_0$ and the random design $\mathbf{X}$. When $N$ is large and $\mathcal{T}$ is drawn at random with $\mathbb{E}[X] = 0$, averaging over $x_0$ yields the linear growth
+Equation \@ref(eq:epe-linear) shows that the EPE at a fixed $x_0$ depends on both $x_0$ and the random design $\mathbf{X}$. When $N$ is large and $\mathcal{T}$ is drawn at random with $\mathbb{E}[X] = 0$, averaging over $x_0$ yields
 
 $$
 \begin{equation}
-\mathbb{E}_{x_0}\,\text{EPE}(x_0) \approx \sigma^2\,\frac{p}{N} + \sigma^2
+\begin{split}
+\mathbb{E}_{x_0}\,\text{EPE}(x_0) &\approx \frac{\sigma^2}{N}\,\text{trace}\!\left(\text{Cov}(X)^{-1}\text{Cov}(x_0)\right) + \sigma^2 \\
+                                  &=       \frac{\sigma^2p}{N} + \sigma^2
+\end{split}
 (\#eq:epe-avg)
 \end{equation}
 $$
+
+where $p$ is the dimension of the input space.
 
 <details>
 <summary>Proof of expected EPE over $x_0$</summary>
@@ -1625,7 +1629,9 @@ $$
 (\mathbf{X}^T\mathbf{X})^{-1} = \frac{1}{N}\left(\frac{\mathbf{X}^T\mathbf{X}}{N}\right)^{-1} \approx \frac{1}{N}\,\text{Cov}(X)^{-1}
 $$
 
-for large $N$. Substituting into equation \@ref(eq:epe-linear):
+for large $N$. Since $\text{Cov}(X)^{-1}$ is now a population quantity — independent of the training sample — it is deterministic and passes through $\mathbb{E}_{\mathcal{T}}$ as a constant.
+
+Substituting into equation \@ref(eq:epe-linear) and taking $\mathbb{E}[X] = 0$:
 
 $$
 \text{EPE}(x_0) \approx \sigma^2 + \frac{\sigma^2}{N}\,x_0^T\,\text{Cov}(X)^{-1}\,x_0
@@ -1643,7 +1649,7 @@ $$
 \begin{equation}
 \begin{split}
 \mathbb{E}_{x_0}\bigl[x_0^T\,\text{Cov}(X)^{-1}\,x_0\bigr] &= \mathbb{E}_{x_0}\bigl[\text{trace}\bigl(\text{Cov}(X)^{-1}x_0x_0^T\bigr)\bigr] \\
-                                                          &= \text{trace}\bigl(\text{Cov}(X)^{-1}\,\mathbb{E}_{x_0}[x_0 x_0^T]\bigr)
+                                                           &= \text{trace}\bigl(\text{Cov}(X)^{-1}\,\mathbb{E}_{x_0}[x_0 x_0^T]\bigr)
 \end{split}
 \end{equation}
 $$
